@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_project/models/user.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -14,18 +16,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  void _Login() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      User user = User(_username, _password, '', '', '', '');
-      if (user.validatePassword(_password)) {
-        Navigator.pushNamed(context, '/home');
-      } else {
-        setState(() {
-          _error = 'Invalid username or password';
-        });
-      }
-    }
+  void login() {
+    // มีวิธีล็อกอินใหม่ให้ไปดู slide firebase
+
+    // if (_formKey.currentState!.validate()) {
+    //   _formKey.currentState!.save();
+    //   User user = User(_username, _password, '', '', '', '');
+    //   if (user.validatePassword(_password)) {
+    //     Navigator.pushNamed(context, '/home');
+    //   } else {
+    //     setState(() {
+    //       _error = 'Invalid username or password';
+    //     });
+    //   }
+    // }
   }
 
   @override
@@ -95,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20.0),
                   ElevatedButton(
-                    onPressed: _Login,
+                    onPressed: login,
                     child: const Text('Login'),
                   ),
                   Text(
