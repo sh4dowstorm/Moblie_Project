@@ -1,22 +1,19 @@
-enum PlaceCategory {
-  beach,
-  forest,
-  city,
-  restaurant,
-  hotel
-}
+enum PlaceCategory { beach, forest, city, restaurant, hotel }
 
 class Place {
-  final String _name;
-  final PlaceCategory _category;
-  final String _description;
-  final String _imagePath;
+  final String name;
+  final PlaceCategory category;
+  final String description;
+  final String imagePath;
+  final String located;
+  final double rated;
 
-  Place(this._name, this._category, this._description, this._imagePath);
-
-  String get name => _name;
-  PlaceCategory get category => _category;
-  String get description => _description;
-  String get imagePath => _imagePath;
-
+  Place({
+    required this.name,
+    required this.category,
+    required this.description,
+    required this.imagePath,
+    required this.located,
+    required this.rated,
+  });
 }
