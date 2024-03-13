@@ -14,12 +14,22 @@ void main() {
         // text theme
         textTheme: const TextTheme(
           titleLarge: TextStyle(
+            color: Color(0xFF070A07),
             fontSize: 32,
             fontWeight: FontWeight.w800,
+            fontFamily: 'Prompt',
           ),
           titleMedium: TextStyle(
+            color: Color(0xFF070A07),
             fontSize: 20,
-            fontWeight: FontWeight.w700
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Prompt',
+          ),
+          labelSmall: TextStyle(
+            color: Color(0xFF070A07),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            fontFamily: 'Prompt',
           ),
         ),
 
@@ -38,6 +48,13 @@ void main() {
           style: ButtonStyle(
             iconSize: MaterialStatePropertyAll(30),
           ),
+        ),
+
+        // blackgroud, main, accent,... color
+        colorScheme: const ColorScheme.light(
+          background: Color(0xFFF3F8FF),
+          primary: Color(0xFFDAEEE0),
+          secondary: Color(0xFFA6CEB1),
         ),
       ),
       debugShowCheckedModeBanner: false,
