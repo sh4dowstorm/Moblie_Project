@@ -61,78 +61,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         color: Theme.of(context).colorScheme.background,
                       ),
                       width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // located
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                        widget.place.located,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w400),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // name
-                                  Text(
-                                    widget.place.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(fontWeight: FontWeight.w500),
-                                  ),
-
-                                  // rated
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.star_rounded,
-                                        size: 16,
-                                      ),
-                                      Text(
-                                          '${widget.place.rated.toStringAsFixed(1)} (500 ratings)'),
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-                              // go to rated page
-                              const IconButton(
-                                onPressed: null,
-                                icon: Icon(Icons.keyboard_arrow_right_rounded),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-
-                          // line
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 1,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.onBackground,
-                              borderRadius: BorderRadius.circular(1),
-                            ),
-                          ),
-                        ],
-                      ),
+                      height: MediaQuery.of(context).size.height * 0.03,
                     ),
                   ),
                 ],
@@ -140,8 +69,87 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             ),
 
             SliverToBoxAdapter(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // located
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: 16,
+                                ),
+                                Text(
+                                  widget.place.located,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelSmall!
+                                      .copyWith(fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+
+                            // name
+                            Text(
+                              widget.place.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontWeight: FontWeight.w500),
+                            ),
+
+                            // rated
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star_rounded,
+                                  size: 16,
+                                ),
+                                Text(
+                                    '${widget.place.rated.toStringAsFixed(1)} (500 ratings)'),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        // go to rated page
+                        const IconButton(
+                          onPressed: null,
+                          icon: Icon(Icons.keyboard_arrow_right_rounded),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+
+                    // line
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 1,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.13,
+                height: 20,
               ),
             ),
 
