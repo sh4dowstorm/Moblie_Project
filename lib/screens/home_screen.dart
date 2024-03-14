@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_project/models/location.dart';
-import 'package:mobile_project/pages/place_detail_screen.dart';
+import 'package:mobile_project/screens/place_detail_screen.dart';
 import 'package:mobile_project/widgets/place_display.dart';
 import 'package:mobile_project/widgets/search_field.dart';
 import 'package:mobile_project/widgets/place_category.dart';
