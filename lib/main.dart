@@ -7,7 +7,7 @@ import 'package:mobile_project/screens/place_detail_screen.dart';
 void main() {
   runApp(
     MaterialApp(
-      initialRoute: '/detail',
+      initialRoute: '/home',
       routes: {
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
