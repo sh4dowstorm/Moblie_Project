@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.1.1
   google_fonts: ^6.1.0
   flutter_gradient_app_bar: ^0.3.1
+  firebase_core: ^2.27.1
 
 dev_dependencies:
   flutter_test:

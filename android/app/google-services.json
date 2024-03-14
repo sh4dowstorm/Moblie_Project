@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "956895190487",
+    "project_id": "mobile-project-trang",
+    "storage_bucket": "mobile-project-trang.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956895190487:android:38419f3ca52d01ee5cff92",
+        "android_client_info": {
+          "package_name": "com.example.mobile_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaKNCyY9QANfuBVgn4sSOO7_HaDQZuZN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
