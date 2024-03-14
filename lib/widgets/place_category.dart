@@ -70,7 +70,7 @@ class PlaceCategoryButton extends StatelessWidget {
                 .copyWith(iconColor: MaterialStatePropertyAll(iconColor)),
           ),
         ),
-        Text(label),
+        Text(label,style: Theme.of(mainContext).textTheme.labelSmall,),
       ],
     );
   }

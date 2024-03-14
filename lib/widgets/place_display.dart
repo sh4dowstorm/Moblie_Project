@@ -61,13 +61,18 @@ class PlaceDisplay extends StatelessWidget {
             )
           ],
         ),
-        const SizedBox(height: 8,),
+        const SizedBox(
+          height: 8,
+        ),
 
         // place name
         Container(
           padding: const EdgeInsets.only(left: 5),
           width: 150,
-          child: Text(place.name),
+          child: Text(
+            place.name,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
         ),
 
         // place location
@@ -81,6 +86,7 @@ class PlaceDisplay extends StatelessWidget {
               ),
               Text(
                 place.located,
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ],
           ),
