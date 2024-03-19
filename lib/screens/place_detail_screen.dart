@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
 import 'package:mobile_project/models/location.dart';
 
