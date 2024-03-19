@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_project/models/user.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -61,9 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                     Text(
                       'Login',
-                      style: GoogleFonts.gurajada(
-                        fontSize: 40.0,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ]),
                   const SizedBox(height: 20.0),
