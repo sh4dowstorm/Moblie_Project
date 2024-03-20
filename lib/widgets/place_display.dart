@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/models/location.dart';
 
 class PlaceDisplay extends StatelessWidget {
   const PlaceDisplay({
     super.key,
     required this.place,
+    required this.image,
+    required this.located,
+    required this.score,
   });
 
-  final Place place;
+  final String place;
+  final String image;
+  final String located;
+  final double score;
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +26,7 @@ class PlaceDisplay extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/${place.imagePath}',
-                  ),
+                  image: NetworkImage(image),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -44,7 +47,7 @@ class PlaceDisplay extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      place.rated.toStringAsFixed(1),
+                      score.toStringAsFixed(1),
                       style: TextStyle(
                         color: Colors.amber[400],
                         fontSize: 12,
@@ -70,7 +73,7 @@ class PlaceDisplay extends StatelessWidget {
           padding: const EdgeInsets.only(left: 5),
           width: 150,
           child: Text(
-            place.name,
+            place,
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
@@ -85,7 +88,7 @@ class PlaceDisplay extends StatelessWidget {
                 Icons.place,
               ),
               Text(
-                place.located,
+                located,
                 style: Theme.of(context).textTheme.labelSmall,
               ),
             ],

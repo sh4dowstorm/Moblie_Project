@@ -4,16 +4,20 @@ class Place {
   final String name;
   final PlaceCategory category;
   final String description;
-  final String imagePath;
+  final String image;
   final String located;
-  final double rated;
 
   Place({
     required this.name,
     required this.category,
     required this.description,
-    required this.imagePath,
+    required this.image,
     required this.located,
-    required this.rated,
   });
+
+  // @override
+  // String toString() {
+  //   // TODO: implement toString
+  //   return super.toString();
+  // }
 }
