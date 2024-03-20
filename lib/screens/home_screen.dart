@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_project/models/location.dart';
 import 'package:mobile_project/screens/place_detail_screen.dart';
+import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/place_display.dart';
 import 'package:mobile_project/widgets/search_field.dart';
 import 'package:mobile_project/widgets/place_category.dart';
@@ -14,40 +15,6 @@ const Map<int, String> topicLabel = {
   4: 'Hotel',
 };
 
-List<Place> dummy = [
-  Place(
-    name: 'เกาะลิบง',
-    category: PlaceCategory.beach,
-    description: '',
-    imagePath: 'login-page-image.jpg',
-    located: 'ตำบลเกาะลิบง',
-    rated: 4.8,
-  ),
-  Place(
-    name: 'เกาะลิบง',
-    category: PlaceCategory.beach,
-    description: '',
-    imagePath: 'login-page-image.jpg',
-    located: 'ตำบลเกาะลิบง',
-    rated: 4.8,
-  ),
-  Place(
-    name: 'เกาะลิบง',
-    category: PlaceCategory.beach,
-    description: '',
-    imagePath: 'login-page-image.jpg',
-    located: 'ตำบลเกาะลิบง',
-    rated: 4.8,
-  ),
-  Place(
-    name: 'เกาะลิบง',
-    category: PlaceCategory.beach,
-    description: '',
-    imagePath: 'login-page-image.jpg',
-    located: 'ตำบลเกาะลิบง',
-    rated: 4.8,
-  ),
-];
 const List<List<dynamic>> categoryIcon = [
   [
     Icon(Icons.beach_access_rounded),
@@ -83,9 +50,26 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String? _text;
   int _currentCategory = -1;
+  late final AnimationController _errorAnimationController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    // initialize animaiton controller
+    _errorAnimationController = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _errorAnimationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,23 +164,106 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               // place display
-              SliverGrid.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                ),
-                itemCount: dummy.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PlaceDetailScreen(
-                        place: dummy[index],
-                      )
-                    )),
-                    child: PlaceDisplay(place: dummy[index]),
-                  );
+              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: (_currentCategory == -1)
+                    ? FirebaseLoader.loadData(
+                        reference: FirebaseLoader.placeRef)
+                    : FirebaseLoader.loadFoodWithCategoryCondition(
+                        categoryIndex: _currentCategory),
+                builder: (context, placeSnapshot) {
+                  if (placeSnapshot.hasData) {
+                    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseLoader.loadData(
+                          reference: FirebaseLoader.ratedRef),
+                      builder: (context, ratedSnapshot) {
+                        if (ratedSnapshot.hasData) {
+                          // places data
+                          final List<
+                                  QueryDocumentSnapshot<Map<String, dynamic>>>
+                              places = placeSnapshot.data?.docs ?? [];
+
+                          // rated data
+                          final List<
+                                  QueryDocumentSnapshot<Map<String, dynamic>>>
+                              rated = ratedSnapshot.data?.docs ?? [];
+
+                          // join rated and places
+                          final Map<QueryDocumentSnapshot<Map<String, dynamic>>,
+                                  QueryDocumentSnapshot<Map<String, dynamic>>>
+                              joined = {};
+
+                          for (var placeDocument in places) {
+                            for (var ratedDocument in rated) {
+                              if (placeDocument.data()['name'] ==
+                                  ratedDocument.data()['place']) {
+                                joined.putIfAbsent(
+                                    placeDocument, () => ratedDocument);
+                                break;
+                              }
+                            }
+                          }
+
+                          List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                              joinedList = joined.keys.toList();
+
+                          return SliverGrid.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemCount: joinedList.length,
+                            itemBuilder: (context, index) {
+                              double score =
+                                  joined[joinedList[index]]!.data()['score'] /
+                                      joined[joinedList[index]]!
+                                          .data()['review']
+                                          .length;
+
+                              return GestureDetector(
+                                onTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => PlaceDetailScreen(
+                                              place: joinedList[index]
+                                                  .data()['name'],
+                                              score: joined[
+                                                      joinedList[index]]!
+                                                  .data(),
+                                            ))),
+                                child: PlaceDisplay(
+                                  image: joinedList[index].data()['image'],
+                                  located: joinedList[index].data()['located'],
+                                  place: joinedList[index].data()['name'],
+                                  score: score,
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return SliverToBoxAdapter(
+                            child: FirebaseLoader.createWaitAnimation(
+                                context: context,
+                                controller: _errorAnimationController,
+                                error: placeSnapshot.hasError
+                                    ? placeSnapshot.error.toString()
+                                    : null),
+                          );
+                        }
+                      },
+                    );
+                  } else {
+                    // incase having error
+                    return SliverToBoxAdapter(
+                      child: FirebaseLoader.createWaitAnimation(
+                          context: context,
+                          controller: _errorAnimationController,
+                          error: placeSnapshot.hasError
+                              ? placeSnapshot.error.toString()
+                              : null),
+                    );
+                  }
                 },
-              )
+              ),
             ],
           ),
         ),
