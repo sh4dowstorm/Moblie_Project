@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mobile_project/screens/place_detail_screen.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/place_display.dart';
