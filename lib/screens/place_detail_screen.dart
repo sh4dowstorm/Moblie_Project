@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gradient_app_bar/flutter_gradient_app_bar.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   const PlaceDetailScreen({
@@ -21,6 +24,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
     with TickerProviderStateMixin {
   late final AnimationController _errorAnimationController;
 
+  Future<void> _openUrl(String link) async {
+    Uri uri = Uri.parse(link);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode.inAppWebView,
+      );
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,17 +53,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Theme.of(context).colorScheme.background,
-        appBar: GradientAppBar(
+        appBar: AppBar(
           elevation: 1,
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.background,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded),
             onPressed: () => Navigator.of(context).pop(),
@@ -60,24 +68,43 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
               Map<String, dynamic> placeData = snapshot.data!.docs.first.data();
+              LatLng onmap = LatLng(double.parse(placeData['latitude']),
+                  double.parse(placeData['longtitude']));
+              String detail = placeData['description'] as String;
+              detail = detail.replaceAll(r'\t', '\t').replaceAll(r'\n', '\n');
+
               return CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
                     child: Stack(
                       children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.40,
                           width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(placeData['image']),
-                              fit: BoxFit.cover,
+                          child: GoogleMap(
+                            mapType: MapType.normal,
+                            compassEnabled: true,
+                            markers: {
+                              Marker(
+                                markerId: MarkerId(placeData['name']),
+                                position: onmap,
+                                onTap: () async {
+                                  String link =
+                                      'https://google.com/maps/place/${placeData['name']}/';
+
+                                  await _openUrl(link);
+                                },
+                              ),
+                            },
+                            initialCameraPosition: CameraPosition(
+                              zoom: 14,
+                              target: onmap,
                             ),
                           ),
                         ),
                         Transform.translate(
                           offset: Offset(
-                              0, MediaQuery.of(context).size.height * 0.23),
+                              0, MediaQuery.of(context).size.height * 0.385),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.vertical(
@@ -107,6 +134,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  const SizedBox(
+                                    height: 6,
+                                  ),
+
                                   // located
                                   Row(
                                     children: [
@@ -137,12 +168,21 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                   // rated
                                   Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.star_rounded,
                                         size: 16,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                                       ),
                                       Text(
-                                          '${(widget.score['score'] / widget.score['review'].length).toStringAsFixed(1)} (${widget.score['review'].length} ratings)'),
+                                        '${(widget.score['score'] / widget.score['review'].length).toStringAsFixed(1)} (${widget.score['review'].length} ratings)',
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -187,7 +227,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                         right: 20,
                       ),
                       child: Text(
-                        placeData['description'],
+                        detail,
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                     ),
@@ -195,10 +235,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                 ],
               );
             } else {
-              return FirebaseLoader.createWaitAnimation(
-                  context: context,
-                  controller: _errorAnimationController,
-                  error: snapshot.hasError ? snapshot.error.toString() : null);
+              return Center(
+                child: FirebaseLoader.createWaitAnimation(
+                    context: context,
+                    controller: _errorAnimationController,
+                    error:
+                        snapshot.hasError ? snapshot.error.toString() : null),
+              );
             }
           },
         ),

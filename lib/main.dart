@@ -1,10 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_project/firebase_options.dart';
-import 'package:mobile_project/models/location.dart';
 import 'package:mobile_project/screens/login_screen.dart';
 import 'package:mobile_project/screens/home_screen.dart';
-import 'package:mobile_project/screens/place_detail_screen.dart';
 import 'package:mobile_project/screens/setting_screen.dart';
 import 'package:mobile_project/screens/edit_account_screen.dart';
 
@@ -71,6 +69,7 @@ Future<void> main() async {
         // blackgroud, main, accent,... color
         colorScheme: const ColorScheme.light(
           onBackground: Color(0xFF070A07),
+          onPrimary: Colors.deepOrangeAccent,
           background: Color(0xFFF3F8FF),
           primary: Color(0xFFDAEEE0),
           secondary: Color(0xFFA6CEB1),
