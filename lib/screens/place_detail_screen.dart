@@ -90,7 +90,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                 position: onmap,
                                 onTap: () async {
                                   String link =
-                                      'https://google.com/maps/place/${placeData['name']}/';
+                                      'https://google.com/maps?q=${placeData['name']}';
+                                  log(link);
 
                                   await _openUrl(link);
                                 },
