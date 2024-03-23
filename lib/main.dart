@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/firebase_options.dart';
 import 'package:mobile_project/screens/login_screen.dart';
 import 'package:mobile_project/screens/home_screen.dart';
+import 'package:mobile_project/screens/main_layout_screen.dart';
 import 'package:mobile_project/screens/setting_screen.dart';
 import 'package:mobile_project/screens/edit_account_screen.dart';
 
@@ -13,8 +14,9 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: {
+        '/': (context) => const MainLayoutScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
         '/setting': (context) => SettingScreen(),
@@ -69,7 +71,9 @@ Future<void> main() async {
         // blackgroud, main, accent,... color
         colorScheme: const ColorScheme.light(
           onBackground: Color(0xFF070A07),
-          onPrimary: Colors.deepOrangeAccent,
+          onPrimary: Color(0xFF62A675),
+          onSecondary: Colors.deepOrangeAccent,
+          surface: Colors.white,
           background: Color(0xFFF3F8FF),
           primary: Color(0xFFDAEEE0),
           secondary: Color(0xFFA6CEB1),

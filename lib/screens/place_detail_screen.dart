@@ -174,14 +174,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                         size: 16,
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .onPrimary,
+                                            .onSecondary,
                                       ),
                                       Text(
                                         '${(widget.score['score'] / widget.score['review'].length).toStringAsFixed(1)} (${widget.score['review'].length} ratings)',
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .onPrimary,
+                                              .onSecondary,
                                         ),
                                       ),
                                     ],
