@@ -1,5 +1,3 @@
-import 'package:bcrypt/bcrypt.dart';
-
 class User {
   String _username;
   String _encryptedPassword;
@@ -16,7 +14,7 @@ class User {
         _surname = surname,
         _userImagePath = userImagePath {
     _username = username;
-    _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+    // _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
     _email = email;
     _firstname = firstname;
     _surname = surname;
@@ -34,13 +32,13 @@ class User {
     _username = username;
   }
 
-  void ChangePassword(String password){
-    _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-  }
+  // void ChangePassword(String password){
+  //   _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+  // }
 
-  bool validatePassword(String providedPassword) {
-    return BCrypt.checkpw(providedPassword, _encryptedPassword);
-  }
+  // bool validatePassword(String providedPassword) {
+  //   return BCrypt.checkpw(providedPassword, _encryptedPassword);
+  // }
 
   void ChangeEmail(String email) {
     _email = email;
