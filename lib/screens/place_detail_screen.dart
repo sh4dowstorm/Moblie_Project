@@ -9,12 +9,10 @@ import 'package:url_launcher/url_launcher.dart';
 class PlaceDetailScreen extends StatefulWidget {
   const PlaceDetailScreen({
     super.key,
-    required this.place,
-    required this.score,
+    required this.placeId,
   });
 
-  final String place;
-  final Map<String, dynamic> score;
+  final String placeId;
 
   @override
   State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
@@ -39,6 +37,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // animation
     _errorAnimationController = AnimationController(vsync: this);
   }
 
@@ -63,14 +63,22 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: FirebaseLoader.loadFoodWithNameCondition(name: widget.place),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              Map<String, dynamic> placeData = snapshot.data!.docs.first.data();
-              LatLng onmap = LatLng(double.parse(placeData['latitude']),
-                  double.parse(placeData['longtitude']));
-              String detail = placeData['description'] as String;
+        body: FutureBuilder<Map<String, dynamic>>(
+          future:
+              FirebaseLoader.placeRef.doc(widget.placeId).get().then((value) {
+            return value.data()!;
+          }),
+          builder: (contex, snapshort) {
+            if (snapshort.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshort.hasError) {
+              return Text('Error: ${snapshort.error}');
+            } else {
+              Map<String, dynamic> place = snapshort.data!;
+
+              LatLng onmap = LatLng(double.parse(place['latitude']),
+                  double.parse(place['longtitude']));
+              String detail = place['description'] as String;
               detail = detail.replaceAll(r'\t', '\t').replaceAll(r'\n', '\n');
 
               return CustomScrollView(
@@ -86,11 +94,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                             compassEnabled: true,
                             markers: {
                               Marker(
-                                markerId: MarkerId(placeData['name']),
+                                markerId: MarkerId(place['name']),
                                 position: onmap,
                                 onTap: () async {
                                   String link =
-                                      'https://google.com/maps?q=${placeData['name']}';
+                                      'https://google.com/maps?q=${place['name']}';
                                   log(link);
 
                                   await _openUrl(link);
@@ -147,7 +155,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                         size: 16,
                                       ),
                                       Text(
-                                        placeData['located'],
+                                        place['located'],
                                         style: Theme.of(context)
                                             .textTheme
                                             .labelSmall!
@@ -159,7 +167,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
 
                                   // name
                                   Text(
-                                    placeData['name'],
+                                    place['name'],
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleLarge!
@@ -176,14 +184,28 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                             .colorScheme
                                             .onSecondary,
                                       ),
-                                      Text(
-                                        '${(widget.score['score'] / widget.score['review'].length).toStringAsFixed(1)} (${widget.score['review'].length} ratings)',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSecondary,
-                                        ),
-                                      ),
+                                      FutureBuilder<int>(
+                                        future: FirebaseLoader.placeRef
+                                            .doc(widget.placeId)
+                                            .collection('opinion')
+                                            .get()
+                                            .then((value) => value.docs.length),
+                                        builder: (context, rated) {
+                                          int totalScore = place['score'] as int;
+
+                                          String text = rated.hasData
+                                              ? '${(totalScore/rated.data!).toStringAsFixed(1)} (${rated.data} ratings)'
+                                              : rated.error.toString();
+                                          return Text(
+                                            text,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary,
+                                            ),
+                                          );
+                                        },
+                                      )
                                     ],
                                   ),
                                 ],
@@ -234,14 +256,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                     ),
                   ),
                 ],
-              );
-            } else {
-              return Center(
-                child: FirebaseLoader.createWaitAnimation(
-                    context: context,
-                    controller: _errorAnimationController,
-                    error:
-                        snapshot.hasError ? snapshot.error.toString() : null),
               );
             }
           },

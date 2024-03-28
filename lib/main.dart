@@ -14,7 +14,7 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
         '/': (context) => const MainLayoutScreen(),
         '/login': (context) => LoginScreen(),

@@ -1,14 +1,15 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mobile_project/firebase_options.dart';
 
 class FirebaseLoader {
   static final CollectionReference<Map<String, dynamic>> placeRef =
       FirebaseFirestore.instance.collection('place');
-  static final CollectionReference<Map<String, dynamic>> ratedRef =
-      FirebaseFirestore.instance.collection('rated');
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> loadData({
     required CollectionReference<Map<String, dynamic>> reference,
@@ -16,16 +17,12 @@ class FirebaseLoader {
     return reference.snapshots();
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>>?
-      loadFoodWithNameCondition({required String name}) {
-    return placeRef.where('name', isEqualTo: name).snapshots();
-  }
-
-  static Stream<QuerySnapshot<Map<String, dynamic>>>
-      loadFoodWithCategoryCondition({
-    required int categoryIndex,
+  static Stream<QuerySnapshot<Map<String, dynamic>>>? loadWithCondition({
+    required CollectionReference<Map<String, dynamic>> reference,
+    required String fieldName,
+    required Object equalValue,
   }) {
-    return placeRef.where('category', isEqualTo: categoryIndex).snapshots();
+    return placeRef.where(fieldName, isEqualTo: equalValue).snapshots();
   }
 
   static Column createWaitAnimation(
@@ -50,3 +47,18 @@ class FirebaseLoader {
     );
   }
 }
+
+// void main(List<String> args) async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+//   FirebaseLoader.placeRef
+//       .doc('VQv8dUEHEp1XIIpsb7iM')
+//       .collection('opinion')
+//       .get()
+//       .then((value) {
+//     for (var element in value.docs) {
+//       log('${element.id} : ${element.data().toString()}');
+//     }
+//   });
+// }
