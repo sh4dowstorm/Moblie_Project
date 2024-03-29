@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/models/user.dart' as appUser;
-import 'package:mobile_project/screens/forum_screen.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/home_screen.dart';
 import 'package:mobile_project/screens/planner_screen.dart';
 import 'package:mobile_project/screens/setting_screen.dart';
@@ -18,7 +18,7 @@ class MainLayoutScreen extends StatefulWidget {
 class _MainLayoutScreenState extends State<MainLayoutScreen>
     with TickerProviderStateMixin {
   int _currentIndex = 0;
-  List<Widget> _screens = [];
+  late final List<Widget> _screens;
 
   @override
   void initState() {
@@ -26,7 +26,6 @@ class _MainLayoutScreenState extends State<MainLayoutScreen>
     _screens = [
       const HomeScreen(),
       const PlannerScreen(),
-      const ForumScreen(),
       SettingScreen(user: widget.user),
     ];
   }
@@ -50,10 +49,18 @@ class _MainLayoutScreenState extends State<MainLayoutScreen>
           indexPage: _currentIndex,
           onClick: changeIndex,
           button: const [
-            Icons.home,
-            Icons.edit_square,
-            Icons.people,
-            Icons.menu,
+            {
+              'fill': Ionicons.home,
+              'outline': Ionicons.home_outline,
+            },
+            {
+              'fill': Ionicons.create,
+              'outline': Ionicons.create_outline,
+            },
+            {
+              'fill': Ionicons.menu,
+              'outline': Ionicons.menu_outline,
+            },
           ],
         ),
       ),
