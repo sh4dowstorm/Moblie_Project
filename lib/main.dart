@@ -49,6 +49,12 @@ Future<void> main() async {
             fontWeight: FontWeight.w400,
             fontFamily: 'Prompt',
           ),
+          bodyLarge: TextStyle(
+            color: Color(0xFF070A07),
+            fontSize: 24,
+            fontWeight: FontWeight.w400,
+            fontFamily: 'Prompt',
+          ),
         ),
 
         // search bar theme
