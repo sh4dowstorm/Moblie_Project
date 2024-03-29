@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ? FirebaseLoader.loadData(reference: FirebaseLoader.placeRef)
               : FirebaseLoader.loadWithCondition(
                   reference: FirebaseLoader.placeRef,
-                  fieldName: 'name',
+                  fieldName: 'category',
                   equalValue: _currentCategory,
                 ),
           builder: (context, placeSnapshot) {
