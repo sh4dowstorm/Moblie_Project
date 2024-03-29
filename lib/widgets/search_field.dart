@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class SearchField extends StatelessWidget {
   const SearchField({
@@ -25,7 +26,7 @@ class SearchField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon: const Icon(
-            Icons.search_rounded,
+            Ionicons.search,
           ),
         ),
       ),

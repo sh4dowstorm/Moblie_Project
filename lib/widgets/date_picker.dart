@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class DatePickerCustom extends StatefulWidget {
   const DatePickerCustom({
@@ -43,7 +44,9 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
         },
         readOnly: true,
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.calendar_today_rounded),
+          prefixIcon: const Icon(
+            Ionicons.calendar_clear_outline,
+          ),
           contentPadding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
           hintText: widget.datePickerController.text,
           hintStyle: Theme.of(context).textTheme.labelSmall,

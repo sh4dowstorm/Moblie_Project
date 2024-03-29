@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/screens/forum_screen.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/home_screen.dart';
 import 'package:mobile_project/screens/planner_screen.dart';
 import 'package:mobile_project/screens/setting_screen.dart';
@@ -18,7 +18,6 @@ class _MainLayoutScreenState extends State<MainLayoutScreen>
   final List<Widget> _screens = const [
     HomeScreen(),
     PlannerScreen(),
-    ForumScreen(),
     SettingScreen(),
   ];
 
@@ -41,10 +40,18 @@ class _MainLayoutScreenState extends State<MainLayoutScreen>
           indexPage: _currentIndex,
           onClick: changeIndex,
           button: const [
-            Icons.home,
-            Icons.edit_square,
-            Icons.people,
-            Icons.menu,
+            {
+              'fill': Ionicons.home,
+              'outline': Ionicons.home_outline,
+            },
+            {
+              'fill': Ionicons.create,
+              'outline': Ionicons.create_outline,
+            },
+            {
+              'fill': Ionicons.menu,
+              'outline': Ionicons.menu_outline,
+            },
           ],
         ),
       ),

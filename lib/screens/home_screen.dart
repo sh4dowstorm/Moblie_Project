@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:mobile_project/screens/place_detail_screen.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/place_display.dart';
@@ -19,27 +22,27 @@ const Map<int, String> topicLabel = {
 
 const List<List<dynamic>> categoryIcon = [
   [
-    Icon(Icons.beach_access_rounded),
+    Icon(LineIcons.umbrellaBeach),
     Color(0xFF83F8FF),
     'beach',
   ],
   [
-    Icon(Icons.forest_rounded),
+    Icon(LineIcons.tree),
     Color(0xFF95D6A8),
     'forest',
   ],
   [
-    Icon(Icons.location_city_rounded),
+    Icon(LineIcons.mosque),
     Color(0xFFA6A7A7),
     'city',
   ],
   [
-    Icon(Icons.restaurant_menu_rounded),
+    Icon(Ionicons.restaurant_outline),
     Color(0xFFFBBC05),
     'resturent',
   ],
   [
-    Icon(Icons.hotel_rounded),
+    Icon(Ionicons.bed_outline),
     Color(0xFFE1BEE7),
     'hotel',
   ],

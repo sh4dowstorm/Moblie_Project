@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
@@ -10,23 +9,30 @@ final TextEditingController planNameController = TextEditingController();
 final TextEditingController datePickerController = TextEditingController();
 
 class CreatePlanner extends StatefulWidget {
-  const CreatePlanner({super.key});
+  const CreatePlanner({Key? key}) : super(key: key);
 
   @override
   State<CreatePlanner> createState() => _CreatePlannerState();
 }
 
 class _CreatePlannerState extends State<CreatePlanner> {
-  // demo
-  Future<List<Map<String, dynamic>>> loadData() async {
-    final List<Map<String, dynamic>> places = [];
-    await FirebaseLoader.placeRef.get().then((value) {
-      for (var i in value.docs) {
-        places.add(i.data());
-      }
-    });
+  late List<Map<String, dynamic>> _places;
 
-    return places;
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final List<Map<String, dynamic>> places = [];
+    final value = await FirebaseLoader.placeRef.get();
+    for (var i in value.docs) {
+      places.add(i.data());
+    }
+    setState(() {
+      _places = places;
+    });
   }
 
   @override
@@ -64,7 +70,7 @@ class _CreatePlannerState extends State<CreatePlanner> {
                 child: IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(
-                    Icons.cancel,
+                    Ionicons.close_circle,
                     color: Colors.red,
                   ),
                 ),
@@ -133,57 +139,53 @@ class _CreatePlannerState extends State<CreatePlanner> {
           const SizedBox(
             height: 30,
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Text(
-              'My trip',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'My trip',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const IconButton(
+                onPressed: null,
+                icon: Icon(
+                  Ionicons.location_outline,
+                ),
+              ),
+            ],
           ),
           const SizedBox(
             height: 20,
           ),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: loadData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              } else {
-                final places = snapshot.data;
-
-                return SizedBox(
+          _places != null
+              ? SizedBox(
                   height: MediaQuery.of(context).size.height * 0.4,
                   width: MediaQuery.of(context).size.width,
                   child: ReorderableListView.builder(
                     itemBuilder: (context, index) {
                       return ReorderableDragStartListener(
-                        key: Key(places![index]['image']),
+                        key: Key(_places[index]['image']),
                         index: index,
                         child: PlanPlace(
-                          image: places[index]['image'],
-                          name: places[index]['name'],
-                          located: places[index]['located'],
+                          image: _places[index]['image'],
+                          name: _places[index]['name'],
+                          located: _places[index]['located'],
                         ),
                       );
                     },
-                    itemCount: places?.length ?? 0,
+                    itemCount: _places.length,
                     onReorder: (oldIndex, newIndex) {
-                      newIndex =
-                          (oldIndex < newIndex) ? newIndex - 1 : newIndex;
-
+                      if (oldIndex < newIndex) {
+                        newIndex -= 1;
+                      }
                       setState(() {
-                        final place = places!.removeAt(oldIndex);
-
-                        places.add(place);
+                        final place = _places.removeAt(oldIndex);
+                        _places.insert(newIndex, place);
                       });
                     },
                   ),
-                );
-              }
-            },
-          ),
+                )
+              : const CircularProgressIndicator(),
         ],
       ),
     );

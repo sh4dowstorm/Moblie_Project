@@ -10,12 +10,12 @@ class CustomNavigationBar extends StatelessWidget {
     required this.indexPage,
   });
 
-  final List<IconData> button;
+  final List<Map<String, IconData>> button;
   final int indexPage;
   final Function(int)? onClick;
 
   GestureDetector _buttonOnNav({
-    required IconData icon,
+    required Map<String, IconData> icon,
     required int index,
   }) {
     bool isMatchingIndex = indexPage == index;
@@ -31,7 +31,7 @@ class CustomNavigationBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              icon,
+              isMatchingIndex ? icon['fill'] : icon['outline'],
               size: 40,
               color: isMatchingIndex
                   ? Theme.of(mainContext).colorScheme.onPrimary

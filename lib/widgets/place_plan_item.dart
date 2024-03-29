@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 
 class PlanPlace extends StatelessWidget {
   const PlanPlace({
@@ -27,7 +28,7 @@ class PlanPlace extends StatelessWidget {
         child: Row(
           children: [
             const Icon(
-              Icons.drag_indicator,
+              Ionicons.ellipsis_vertical_outline,
             ),
             const SizedBox(
               width: 10,

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/create_planner_screen.dart';
 import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
@@ -175,9 +176,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
               height: 60,
               width: 60,
               child: Icon(
-                Icons.create,
+                Ionicons.pencil_sharp,
                 color: Theme.of(context).colorScheme.primary,
-                size: 30,
+                size: 35,
               ),
             ),
           ),
