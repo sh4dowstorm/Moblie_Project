@@ -1,16 +1,178 @@
-import 'package:mobile_project/widgets/edit_item.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
 
+import 'package:mobile_project/models/user.dart' as appUser;
+import 'package:mobile_project/screens/change_password_screen.dart';
+import 'package:mobile_project/widgets/edit_item.dart';
+
 class EditAccountScreen extends StatefulWidget {
-  const EditAccountScreen({super.key});
+  final appUser.User user;
+
+  EditAccountScreen({super.key, required this.user});
 
   @override
   State<EditAccountScreen> createState() => _EditAccountScreenState();
 }
 
 class _EditAccountScreenState extends State<EditAccountScreen> {
-  String gender = "man";
+  late TextEditingController _usernameController;
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _emailController;
+
+  File? _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController(text: widget.user.username);
+    _firstNameController = TextEditingController(text: widget.user.firstname);
+    _lastNameController = TextEditingController(text: widget.user.lastname);
+    _emailController = TextEditingController(text: widget.user.email);
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    // 1. Check if permission is already granted
+    final permissionStatus = await Permission.photos.status;
+
+    if (permissionStatus.isGranted) {
+      // Permission already granted, proceed
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } else {
+      // 2. Request permission
+      final permissionStatus = await Permission.photos.request();
+
+      if (permissionStatus.isGranted) {
+        // Permission granted, retry image picking
+        final pickedFile =
+            await ImagePicker().pickImage(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          setState(() {
+            _imageFile = File(pickedFile.path);
+          });
+        }
+      } else {
+        // 3. Handle permission denial (optionally show a message)
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Permission needed'),
+                  content: const Text(
+                      'This app needs the photo permission to access your gallery.'),
+                  actions: <Widget>[
+                    Row(children: [
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF95D6A8),
+                          foregroundColor: const Color(0xFF62A675),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 30),
+                        ),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: () => Permission.photos.request(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF95D6A8),
+                          foregroundColor: const Color(0xFF62A675),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 30),
+                        ),
+                        child: const Text('Grant'),
+                      ),
+                    ]),
+                  ],
+                ));
+      }
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_imageFile == null) return;
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('user_images/${widget.user.uid}.jpg');
+    await ref.putFile(_imageFile!);
+    final imageUrl = await ref.getDownloadURL();
+
+    widget.user.updateProfilePicture(imageUrl);
+  }
+
+  void _updateUserAndSave() async {
+    widget.user.username = _usernameController.text;
+    widget.user.firstname = _firstNameController.text;
+    widget.user.lastname = _lastNameController.text;
+    widget.user.email = _emailController.text;
+    widget.user.updateProfilePicture(
+        _imageFile?.path ?? widget.user.profilePictureUrl);
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user.uid)
+          .update(widget.user.toMap());
+
+      await widget.user.updateEmail(widget.user.email);
+
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: const Text(
+                    'Please check your email inbox and verify the new email address.'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('OK'))
+                ],
+              ));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Profile updated")));
+      Navigator.pop(context, widget.user);
+    } on FirebaseException catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text('Error updating profile: ${e.message}'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context), // Dismiss the dialog
+                child: Text('OK')),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _handleChangePassword() async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const ChangePasswordScreen();
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,28 +180,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, widget.user);
           },
           icon: const Icon(Ionicons.chevron_back_outline),
         ),
         leadingWidth: 80,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () {},
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                fixedSize: Size(60, 50),
-                elevation: 3,
-              ),
-              icon: Icon(Ionicons.checkmark, color: Colors.white),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -54,81 +199,114 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               const SizedBox(height: 40),
               EditItem(
                 title: "Photo",
-                widget: Column(
-                  children: [
-                    Image.asset(
-                      "assets/images/avatar.png",
-                      height: 100,
-                      width: 100,
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.lightBlueAccent,
-                      ),
-                      child: const Text("Upload Image"),
-                    )
-                  ],
+                widget: GestureDetector(
+                  onTap: () => _pickImage().then((value) => _uploadImage()),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    backgroundImage: (_imageFile != null)
+                        ? FileImage(_imageFile!)
+                        : NetworkImage(widget.user.profilePictureUrl)
+                            as ImageProvider,
+                    radius: 35,
+                  ),
                 ),
               ),
-              const EditItem(
-                title: "Name",
-                widget: TextField(),
-              ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               EditItem(
-                title: "Gender",
-                widget: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          gender = "man";
-                        });
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: gender == "man"
-                            ? Colors.deepPurple
-                            : Colors.grey.shade200,
-                        fixedSize: const Size(50, 50),
-                      ),
-                      icon: Icon(
-                        Ionicons.male,
-                        color: gender == "man" ? Colors.white : Colors.black,
-                        size: 18,
-                      ),
+                title: "Username",
+                widget: TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFDAEEE0),
+                    hintText: "Enter your username",
+                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    const SizedBox(width: 20),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          gender = "woman";
-                        });
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: gender == "woman"
-                            ? Colors.deepPurple
-                            : Colors.grey.shade200,
-                        fixedSize: const Size(50, 50),
-                      ),
-                      icon: Icon(
-                        Ionicons.female,
-                        color: gender == "woman" ? Colors.white : Colors.black,
-                        size: 18,
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 40),
-              const EditItem(
-                widget: TextField(),
-                title: "Age",
+              const SizedBox(height: 30),
+              EditItem(
+                title: "Change Password",
+                widget: ElevatedButton(
+                  onPressed: _handleChangePassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFDAEEE0),
+                    foregroundColor: const Color(0xFF9DB1A3),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                  ),
+                  child: const Text("Change Password"),
+                ),
               ),
-              const SizedBox(height: 40),
-              const EditItem(
-                widget: TextField(),
+              const SizedBox(height: 30),
+              EditItem(
+                title: "First Name",
+                widget: TextField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFDAEEE0),
+                    hintText: "Enter your First Name",
+                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              EditItem(
+                title: "Last Name",
+                widget: TextField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFDAEEE0),
+                    hintText: "Enter your Last Name",
+                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              EditItem(
                 title: "Email",
+                widget: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFDAEEE0),
+                    hintText: "Enter your email address",
+                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    _updateUserAndSave();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF95D6A8),
+                    foregroundColor: const Color(0xFF62A675),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                  ),
+                  child: const Text('Save Changes'),
+                ),
               ),
             ],
           ),

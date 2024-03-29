@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_project/styles/google_logo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/user.dart' as appUser;
 import 'package:mobile_project/screens/register_screen.dart';
 import 'package:mobile_project/screens/main_layout_screen.dart';
 import 'package:mobile_project/widgets/social_button.dart';
+import 'package:mobile_project/styles/google_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -28,11 +29,18 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await _auth.signInWithEmailAndPassword(
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: _email, password: _password);
+
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        appUser.User user = appUser.User.fromFirestore(userDoc);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainLayoutScreen()),
+          MaterialPageRoute(builder: (context) => MainLayoutScreen(user: user)),
         );
       } on FirebaseAuthException catch (e) {
         setState(() {
@@ -50,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
   }
 
-  Future<void> _signInWithGoogle() async {
+  Future<void> _logInWithGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
@@ -59,35 +67,45 @@ class _LoginScreenState extends State<LoginScreen> {
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
-        await _auth.signInWithCredential(credential);
+
+        // Sign in with the obtained Google credentials
+        UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
+
+        // Fetch or create user data in Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        appUser.User user;
+        if (userDoc.exists) {
+          user = appUser.User.fromFirestore(userDoc);
+        } else {
+          user = appUser.User(
+            uid: userCredential.user!.uid,
+            username: googleUser.displayName ?? 'username',
+            email: googleUser.email,
+            firstname: googleUser.displayName?.split(' ').first ?? 'firstname',
+            lastname: googleUser.displayName?.split(' ').last ?? 'lastname',
+            profilePictureUrl: googleUser.photoUrl ??
+                'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/default-pfp.png?alt=media&token=016ca8b1-0568-45c3-bdfb-0bdadcba68ea',
+          );
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set(user.toMap());
+        }
+
+        // Navigate to the MainLayoutScreen, carrying the user data
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MainLayoutScreen()),
+          MaterialPageRoute(builder: (context) => MainLayoutScreen(user: user)),
         );
       }
     } catch (e) {
       // Handle sign-in errors
       print('Google Sign in error: $e');
-    }
-  }
-
-  Future<void> _signInWithFacebook() async {
-    try {
-      final result = await FacebookAuth.instance.login();
-
-      if (result.status == LoginStatus.success) {
-        final facebookAuthCredential =
-            FacebookAuthProvider.credential(result.accessToken!.token);
-
-        await FirebaseAuth.instance
-            .signInWithCredential(facebookAuthCredential);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainLayoutScreen()),
-        );
-      }
-    } catch (e) {
-      print('Facebook Sign in error: $e');
     }
   }
 
@@ -125,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle:
-                                const TextStyle(color: Color(0xFF9DB1A3)),
+                                const TextStyle(color: Color.fromRGBO(157, 177, 163, 1)),
                             fillColor: const Color(0xFFDAEEE0),
                             filled: true,
                             border: OutlineInputBorder(
@@ -240,18 +258,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SocialButton(
-                          onPressed: _signInWithGoogle,
-                          icon: GoogleLogo(size: 20)),
-                      SocialButton(
-                          onPressed: _signInWithFacebook,
-                          icon: const Icon(Icons.facebook,
-                              size: 20, color: Color(0xFF0866FF))),
-                    ],
-                  ),
+                  Center(
+                    child: SocialButton(
+                        onPressed: _logInWithGoogle,
+                        icon: const GoogleLogo(size: 20)),
+                  )
                 ],
               ),
             ),
