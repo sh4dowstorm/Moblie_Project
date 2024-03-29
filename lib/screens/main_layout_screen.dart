@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_project/models/user.dart' as appUser;
 import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/home_screen.dart';
 import 'package:mobile_project/screens/planner_screen.dart';
@@ -6,7 +7,9 @@ import 'package:mobile_project/screens/setting_screen.dart';
 import 'package:mobile_project/widgets/nav_bar.dart';
 
 class MainLayoutScreen extends StatefulWidget {
-  const MainLayoutScreen({super.key});
+  final appUser.User user;
+
+  const MainLayoutScreen({super.key, required this.user});
 
   @override
   State<MainLayoutScreen> createState() => _MainLayoutScreenState();
@@ -14,12 +17,18 @@ class MainLayoutScreen extends StatefulWidget {
 
 class _MainLayoutScreenState extends State<MainLayoutScreen>
     with TickerProviderStateMixin {
-  int _currentIndex = 1;
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    PlannerScreen(),
-    SettingScreen(),
-  ];
+  int _currentIndex = 0;
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const HomeScreen(),
+      const PlannerScreen(),
+      SettingScreen(user: widget.user),
+    ];
+  }
 
   void changeIndex(int newIndex) {
     setState(() {

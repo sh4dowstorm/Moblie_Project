@@ -1,11 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_project/models/user.dart' as appUser;
+import 'package:mobile_project/screens/edit_account_screen.dart';
 import 'package:mobile_project/widgets/forward_button.dart';
 import 'package:mobile_project/widgets/setting_item.dart';
 import 'package:mobile_project/widgets/setting_switch.dart';
-import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 
 class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key});
+  appUser.User user;
+
+  SettingScreen({super.key, required this.user});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -37,29 +42,50 @@ class _SettingScreenState extends State<SettingScreen> {
                 width: double.infinity,
                 child: Row(
                   children: [
-                    Image.asset("assets/images/avatar.png", width: 70, height: 70),
+                    CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(widget.user.profilePictureUrl),
+                      radius: 35,
+                    ),
                     const SizedBox(width: 20),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "FirstName LastName",
-                          style: Theme.of(context).textTheme.labelMedium,
+                          "${widget.user.firstname} ${widget.user.lastname}",
+                          style: Theme.of(context).textTheme.labelSmall,
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Kasetart University",
-                          style: TextStyle(
-                            fontSize: 14,
+                        Text(
+                          widget.user.email,
+                          style: const TextStyle(
                             color: Colors.grey,
+                            fontSize: 14,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const Spacer(),
                     ForwardButton(
-                      onTap: () {
-                        Navigator.pushNamed(context, "/edit_account");
+                      onTap: () async {
+                        final updatedUser = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditAccountScreen(user: widget.user),
+                          ),
+                        ) as appUser.User?;
+
+                        if (updatedUser != null) {
+                          // Create a new User object with updated data
+                          final newUser = appUser.User.fromFirestore(
+                              widget.user.toMap() as DocumentSnapshot);
+                          newUser.updateFrom(updatedUser);
+
+                          setState(() {
+                            widget.user = newUser;
+                          });
+                        }
                       },
                     )
                   ],

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/firebase_options.dart';
 import 'package:mobile_project/screens/login_screen.dart';
 import 'package:mobile_project/screens/home_screen.dart';
-import 'package:mobile_project/screens/main_layout_screen.dart';
-import 'package:mobile_project/screens/setting_screen.dart';
-import 'package:mobile_project/screens/edit_account_screen.dart';
+// import 'package:mobile_project/screens/main_layout_screen.dart';
+// import 'package:mobile_project/screens/setting_screen.dart';
+// import 'package:mobile_project/screens/edit_account_screen.dart';
 
 Future<void> main() async {
   // initial firebase
@@ -14,13 +14,13 @@ Future<void> main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
-        '/': (context) => const MainLayoutScreen(),
+        // '/': (context) => const MainLayoutScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        '/setting': (context) => SettingScreen(),
-        '/edit_account': (context) => EditAccountScreen(),
+        // '/setting': (context) => SettingScreen(),
+        // '/edit_account': (context) => EditAccountScreen(),
       },
       theme: ThemeData(
         // text theme
