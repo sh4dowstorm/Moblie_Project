@@ -17,34 +17,45 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final _formKey = GlobalKey<FormState>();
 
   String _email = '';
   String _password = '';
   String _error = '';
   bool _obscurePassword = true;
-
-  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _error = '';
+      });
+
+      _showLoadingIndicator();
+
       try {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: _email, password: _password);
-
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
             .get();
-
         appUser.User user = appUser.User.fromFirestore(userDoc);
         Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainLayoutScreen(user: user)),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (context) => MainLayoutScreen(user: user)));
       } on FirebaseAuthException catch (e) {
         setState(() {
+          _isLoading = false;
           _error = e.message ?? 'Login Failed';
         });
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pop(context); // Dismiss loader
       }
     }
   }
@@ -108,19 +119,32 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _showLoadingIndicator() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Image.asset(
-            'assets/images/login-page-image.jpg',
-            height: MediaQuery.of(context).size.height / 3,
-            fit: BoxFit.cover,
-            width: double.infinity,
-          ),
-          Expanded(
-            child: Container(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 3,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/login-page-image.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 2 / 3,
               padding: const EdgeInsets.all(20.0),
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -138,70 +162,76 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle:
-                                const TextStyle(color: Color(0xFF9DB1A3)),
-                            fillColor: const Color(0xFFDAEEE0),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(40),
+                        SizedBox(
+                          height: 60,
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF9DB1A3)),
+                              fillColor: const Color(0xFFDAEEE0),
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(40),
+                              ),
                             ),
+                            style: const TextStyle(color: Color(0xFF9DB1A3)),
+                            onChanged: (value) {
+                              setState(() {
+                                _email = value;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a Email';
+                              }
+                              return null;
+                            },
                           ),
-                          style: const TextStyle(color: Color(0xFF9DB1A3)),
-                          onChanged: (value) {
-                            setState(() {
-                              _email = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a Email';
-                            }
-                            return null;
-                          },
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle:
-                                const TextStyle(color: Color(0xFF9DB1A3)),
-                            fillColor: const Color(0xFFDAEEE0),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(40),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: const Color(0xFF9DB1A3),
+                        SizedBox(
+                          height: 60,
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF9DB1A3)),
+                              fillColor: const Color(0xFFDAEEE0),
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(40),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: const Color(0xFF9DB1A3),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
                             ),
+                            style: const TextStyle(color: Color(0xFF9DB1A3)),
+                            onChanged: (value) {
+                              setState(() {
+                                _password = value;
+                              });
+                            },
+                            obscureText: _obscurePassword,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a password';
+                              }
+                              return null;
+                            },
                           ),
-                          style: const TextStyle(color: Color(0xFF9DB1A3)),
-                          onChanged: (value) {
-                            setState(() {
-                              _password = value;
-                            });
-                          },
-                          obscureText: _obscurePassword,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a password';
-                            }
-                            return null;
-                          },
                         ),
                       ],
                     ),
@@ -209,9 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: _handleRegister,
                     child: const Text('Sign Up',
-                        style: TextStyle(
-                            color:
-                                Color(0xFF62A675))), // Changed color and text
+                        style: TextStyle(color: Color(0xFF62A675))),
                   ),
                   const SizedBox(height: 10),
                   if (_error.isNotEmpty)
@@ -219,15 +247,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       _error,
                       style: const TextStyle(color: Colors.red),
                     ),
-                  const SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF95D6A8),
                         foregroundColor: const Color(0xFF62A675),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Prompt',
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                       ),
                       child: const Text('Login'),
                     ),
@@ -260,13 +291,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: CustomGoogleButton(
                       onPressed: _logInWithGoogle,
-                    )
-                  )
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
