@@ -47,66 +47,20 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   Future<void> _pickImage() async {
-    // 1. Check if permission is already granted
-    final permissionStatus = await Permission.photos.status;
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+    ].request();
 
-    if (permissionStatus.isGranted) {
-      // Permission already granted, proceed
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
+    if (statuses[Permission.storage]!.isGranted) {
+      final ImagePicker _picker = ImagePicker();
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
         setState(() {
-          _imageFile = File(pickedFile.path);
+          _imageFile = File(image.path);
         });
       }
     } else {
-      // 2. Request permission
-      final permissionStatus = await Permission.photos.request();
-
-      if (permissionStatus.isGranted) {
-        // Permission granted, retry image picking
-        final pickedFile =
-            await ImagePicker().pickImage(source: ImageSource.gallery);
-        if (pickedFile != null) {
-          setState(() {
-            _imageFile = File(pickedFile.path);
-          });
-        }
-      } else {
-        // 3. Handle permission denial (optionally show a message)
-        showDialog(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Permission needed'),
-                  content: const Text(
-                      'This app needs the photo permission to access your gallery.'),
-                  actions: <Widget>[
-                    Row(children: [
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF95D6A8),
-                          foregroundColor: const Color(0xFF62A675),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 30),
-                        ),
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: () => Permission.photos.request(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF95D6A8),
-                          foregroundColor: const Color(0xFF62A675),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 30),
-                        ),
-                        child: const Text('Grant'),
-                      ),
-                    ]),
-                  ],
-                ));
-      }
+      print('Storage permissions denied.');
     }
   }
 
@@ -203,7 +157,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   onTap: () => _pickImage().then((value) => _uploadImage()),
                   child: CircleAvatar(
                     backgroundColor: Colors.grey,
-                    backgroundImage: (_imageFile != null)
+                    backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!)
                         : NetworkImage(widget.user.profilePictureUrl)
                             as ImageProvider,
@@ -218,9 +172,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   controller: _usernameController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDAEEE0),
+                    fillColor: Theme.of(context).colorScheme.primary,
                     hintText: "Enter your username",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -234,8 +191,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 widget: ElevatedButton(
                   onPressed: _handleChangePassword,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDAEEE0),
-                    foregroundColor: const Color(0xFF9DB1A3),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.outline,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15, horizontal: 30),
                   ),
@@ -249,9 +206,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   controller: _firstNameController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDAEEE0),
+                    fillColor: Theme.of(context).colorScheme.primary,
                     hintText: "Enter your First Name",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -266,9 +226,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   controller: _lastNameController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDAEEE0),
+                    fillColor: Theme.of(context).colorScheme.primary,
                     hintText: "Enter your Last Name",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -283,9 +246,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFDAEEE0),
+                    fillColor: Theme.of(context).colorScheme.primary,
                     hintText: "Enter your email address",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -300,8 +266,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     _updateUserAndSave();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF95D6A8),
-                    foregroundColor: const Color(0xFF62A675),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15, horizontal: 30),
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:mobile_project/models/user.dart' as appUser;
 import 'package:mobile_project/screens/edit_account_screen.dart';
 import 'package:mobile_project/widgets/forward_button.dart';
@@ -18,6 +20,16 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   bool isDarkMode = false;
+
+  void _signOut() async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed('/login'); 
+  } catch (e) {
+    print(e.toString()); // Handle any errors during sign out
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +72,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           widget.user.email,
                           style: const TextStyle(
                             color: Colors.grey,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -130,9 +142,17 @@ class _SettingScreenState extends State<SettingScreen> {
               SettingItem(
                 title: "Contact Us",
                 icon: Ionicons.information_circle_sharp,
+                bgColor: Colors.green.shade100,
+                iconColor: Colors.green,
+                onTap: () {},
+              ),
+              const SizedBox(height: 20),
+              SettingItem(
+                title: "Log Out",
+                icon: Ionicons.log_out_outline,
                 bgColor: Colors.red.shade100,
                 iconColor: Colors.red,
-                onTap: () {},
+                onTap: () => _signOut(),
               ),
             ],
           ),
