@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
@@ -46,33 +45,78 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _showImageSourceOptions(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Camera'),
+            onTap: () => _pickImage(ImageSource.camera),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Gallery'),
+            onTap: () => _pickImage(ImageSource.gallery),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    // Request camera and storage permissions
     Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
       Permission.storage,
     ].request();
 
-    if (statuses[Permission.storage]!.isGranted) {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
+    // Handle permission results (If both permissions are granted)
+    if (statuses[Permission.camera]!.isGranted &&
+        statuses[Permission.storage]!.isGranted) {
+      final XFile? pickedFile = await ImagePicker().pickImage(source: source);
+      if (pickedFile != null) {
         setState(() {
-          _imageFile = File(image.path);
+          _imageFile = File(pickedFile.path);
         });
+        _uploadImage();
+        Navigator.pop(context);
       }
     } else {
-      print('Storage permissions denied.');
+      // Show an error message or guide the user to enable permissions
+      print('Permissions denied.');
     }
   }
 
   Future<void> _uploadImage() async {
-    if (_imageFile == null) return;
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('user_images/${widget.user.uid}.jpg');
-    await ref.putFile(_imageFile!);
-    final imageUrl = await ref.getDownloadURL();
+    if (_imageFile != null) {
+      try {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_profile_pictures/${widget.user.uid}');
+        await storageRef.putFile(_imageFile!);
+        final downloadURL = await storageRef.getDownloadURL();
 
-    widget.user.updateProfilePicture(imageUrl);
+        // Update the user's profile picture URL
+        widget.user.updateProfilePicture(downloadURL);
+
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Image uploaded.")));
+      } on FirebaseException catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Text('Error uploading image: ${e.message}'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context), // Dismiss the dialog
+                  child: Text('OK')),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   void _updateUserAndSave() async {
@@ -154,7 +198,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               EditItem(
                 title: "Photo",
                 widget: GestureDetector(
-                  onTap: () => _pickImage().then((value) => _uploadImage()),
+                  onTap: () => _showImageSourceOptions(context),
                   child: CircleAvatar(
                     backgroundColor: Colors.grey,
                     backgroundImage: _imageFile != null
