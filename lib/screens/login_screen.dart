@@ -5,8 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_project/models/user.dart' as appUser;
 import 'package:mobile_project/screens/register_screen.dart';
 import 'package:mobile_project/screens/main_layout_screen.dart';
-import 'package:mobile_project/widgets/social_button.dart';
-import 'package:mobile_project/styles/google_logo.dart';
+import 'package:mobile_project/widgets/custom_google_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -143,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle:
-                                const TextStyle(color: Color.fromRGBO(157, 177, 163, 1)),
+                                const TextStyle(color: Color(0xFF9DB1A3)),
                             fillColor: const Color(0xFFDAEEE0),
                             filled: true,
                             border: OutlineInputBorder(
@@ -259,9 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
                   Center(
-                    child: SocialButton(
-                        onPressed: _logInWithGoogle,
-                        icon: const GoogleLogo(size: 20)),
+                    child: CustomGoogleButton(
+                      onPressed: _logInWithGoogle,
+                    )
                   )
                 ],
               ),

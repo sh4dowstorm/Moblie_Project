@@ -220,7 +220,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     filled: true,
                     fillColor: const Color(0xFFDAEEE0),
                     hintText: "Enter your username",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF9DB1A3),
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -251,7 +254,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     filled: true,
                     fillColor: const Color(0xFFDAEEE0),
                     hintText: "Enter your First Name",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF9DB1A3),
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -268,7 +274,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     filled: true,
                     fillColor: const Color(0xFFDAEEE0),
                     hintText: "Enter your Last Name",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF9DB1A3),
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),
@@ -285,7 +294,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     filled: true,
                     fillColor: const Color(0xFFDAEEE0),
                     hintText: "Enter your email address",
-                    hintStyle: const TextStyle(color: Color(0xFF9DB1A3)),
+                    hintStyle: const TextStyle(
+                      color: Color(0xFF9DB1A3),
+                      fontSize: 5,
+                    ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(30),

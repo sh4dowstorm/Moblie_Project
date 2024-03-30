@@ -60,7 +60,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           widget.user.email,
                           style: const TextStyle(
                             color: Colors.grey,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
                       ],
