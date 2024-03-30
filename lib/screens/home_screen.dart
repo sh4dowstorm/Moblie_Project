@@ -194,32 +194,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       return currentPlace['score'] / value.docs.length;
                     }),
                     builder: (context, snapshot) {
-                      return GestureDetector(
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PlaceDetailScreen(
-                                      placeId: placeData[index].id,
-                                    ))),
-                        child: PlaceDisplay(
-                          image: currentPlace['image'],
-                          located: currentPlace['located'],
-                          place: currentPlace['name'],
-                          score: snapshot.data ?? 0.0,
-                        ),
-                      );
+                      if (snapshot.hasData) {
+                        return GestureDetector(
+                          onTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => PlaceDetailScreen(
+                                        placeId: placeData[index].id,
+                                      ))),
+                          child: PlaceDisplay(
+                            image: currentPlace['image'],
+                            located: currentPlace['located'],
+                            place: currentPlace['name'],
+                            score: snapshot.data ?? 0.0,
+                          ),
+                        );
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return Text(snapshot.error.toString());
+                      }
                     },
                   );
                 },
               );
+            } else if (placeSnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return const SliverToBoxAdapter(child: CircularProgressIndicator());
             } else {
               // incase having error
               return SliverToBoxAdapter(
-                child: FirebaseLoader.createWaitAnimation(
-                    context: context,
-                    controller: _errorAnimationController,
-                    error: placeSnapshot.hasError
-                        ? placeSnapshot.error.toString()
-                        : null),
+                child: SliverToBoxAdapter(child: Text(placeSnapshot.error.toString())),
               );
             }
           },

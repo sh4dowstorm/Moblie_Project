@@ -190,19 +190,27 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                             .get()
                                             .then((value) => value.docs.length),
                                         builder: (context, rated) {
-                                          int totalScore = place['score'] as int;
+                                          if (rated.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const CircularProgressIndicator();
+                                          } else if (rated.hasError) {
+                                            return Text(rated.error.toString());
+                                          } else {
+                                            int totalScore =
+                                                place['score'] as int;
 
-                                          String text = rated.hasData
-                                              ? '${(totalScore/rated.data!).toStringAsFixed(1)} (${rated.data} ratings)'
-                                              : rated.error.toString();
-                                          return Text(
-                                            text,
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondary,
-                                            ),
-                                          );
+                                            String text = rated.hasData
+                                                ? '${(totalScore / rated.data!).toStringAsFixed(1)} (${rated.data} ratings)'
+                                                : rated.error.toString();
+                                            return Text(
+                                              text,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondary,
+                                              ),
+                                            );
+                                          }
                                         },
                                       )
                                     ],

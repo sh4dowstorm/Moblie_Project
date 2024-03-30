@@ -36,28 +36,6 @@ class FirebaseLoader {
     await reference.doc(deletedId).delete();
   }
 
-  static Column createWaitAnimation(
-      {required BuildContext context,
-      required AnimationController controller,
-      String? error}) {
-    return Column(
-      children: [
-        Lottie.asset(
-          'assets/animations/error-animation.json',
-          controller: controller,
-          onLoaded: (composition) {
-            controller.duration = composition.duration;
-            controller.repeat();
-          },
-        ),
-        Text(
-          (error != null) ? error : '',
-          style: Theme.of(context).textTheme.labelSmall,
-        )
-      ],
-    );
-  }
-
   static String idRandomGenerator(int idSize) {
     String upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     String lowerCase = upperCase.toLowerCase();
