@@ -11,6 +11,9 @@ class FirebaseLoader {
   static final CollectionReference<Map<String, dynamic>> placeRef =
       FirebaseFirestore.instance.collection('place');
 
+  static final CollectionReference<Map<String, dynamic>> plannerRef =
+      FirebaseFirestore.instance.collection('planner');
+
   static Stream<QuerySnapshot<Map<String, dynamic>>> loadData({
     required CollectionReference<Map<String, dynamic>> reference,
   }) {
@@ -23,6 +26,13 @@ class FirebaseLoader {
     required Object equalValue,
   }) {
     return placeRef.where(fieldName, isEqualTo: equalValue).snapshots();
+  }
+
+  static Future<void> deleteData({
+    required CollectionReference<Map<String, dynamic>> reference,
+    required String deletedId,
+  }) async {
+    await reference.doc(deletedId).delete();
   }
 
   static Column createWaitAnimation(
