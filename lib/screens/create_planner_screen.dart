@@ -5,9 +5,6 @@ import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
 
-final TextEditingController planNameController = TextEditingController();
-final TextEditingController datePickerController = TextEditingController();
-
 class CreatePlanner extends StatefulWidget {
   const CreatePlanner({Key? key}) : super(key: key);
 
@@ -16,6 +13,8 @@ class CreatePlanner extends StatefulWidget {
 }
 
 class _CreatePlannerState extends State<CreatePlanner> {
+  final TextEditingController _planNameController = TextEditingController();
+  final TextEditingController _datePickerController = TextEditingController();
   late List<Map<String, dynamic>> _places;
 
   @override
@@ -37,7 +36,7 @@ class _CreatePlannerState extends State<CreatePlanner> {
 
   @override
   Widget build(BuildContext context) {
-    datePickerController.text =
+    _datePickerController.text =
         formatDate(DateTime.now(), [yyyy, '-', mm, '-', dd]);
 
     return Container(
@@ -119,8 +118,8 @@ class _CreatePlannerState extends State<CreatePlanner> {
                     child: TextFormField(
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(left: 20),
-                        hintText: 'Your Plan',
                         hintStyle: Theme.of(context).textTheme.labelSmall,
+                        labelText: 'Your Plan',
                       ),
                     ),
                   ),
@@ -130,7 +129,7 @@ class _CreatePlannerState extends State<CreatePlanner> {
 
                   // date picker
                   DatePickerCustom(
-                    datePickerController: datePickerController,
+                    datePickerController: _datePickerController,
                   ),
                 ],
               ),

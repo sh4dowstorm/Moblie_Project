@@ -102,9 +102,15 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 stream: getPlanners(currentUser.inUse),
                 builder: (context, planners) {
                   if (planners.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const SliverToBoxAdapter(
+                      child: CircularProgressIndicator(),
+                    );
                   } else if (planners.hasError) {
-                    return Text(planners.error.toString());
+                    return SliverToBoxAdapter(
+                      child: Text(
+                        planners.error.toString(),
+                      ),
+                    );
                   } else {
                     return SlidableAutoCloseBehavior(
                       closeWhenOpened: true,
@@ -155,7 +161,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                   child: PlanItem(
                                     planName: planData['trip-name'],
                                     image: planData['trip-image'],
-                                    date: planData['trip-date'],
+                                    date: DateTime.fromMillisecondsSinceEpoch(planData['trip-date'].millisecondsSinceEpoch),
                                   ),
                                 ),
                               ),
