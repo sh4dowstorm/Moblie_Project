@@ -17,45 +17,41 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final _formKey = GlobalKey<FormState>();
 
   String _email = '';
   String _password = '';
   String _error = '';
   bool _obscurePassword = true;
-  bool _isLoading = false;
+
+  final _formKey = GlobalKey<FormState>();
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _error = '';
-      });
-
-      _showLoadingIndicator();
-
       try {
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent dismiss on tap outside dialog
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: _email, password: _password);
+
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
             .get();
+
         appUser.User user = appUser.User.fromFirestore(userDoc);
         Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MainLayoutScreen(user: user)));
+          context,
+          MaterialPageRoute(builder: (context) => MainLayoutScreen(user: user)),
+        );
       } on FirebaseAuthException catch (e) {
         setState(() {
-          _isLoading = false;
           _error = e.message ?? 'Login Failed';
         });
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.pop(context); // Dismiss loader
       }
     }
   }
@@ -70,6 +66,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _logInWithGoogle() async {
     try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
       final googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
         final googleAuth = await googleUser.authentication;
@@ -119,14 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showLoadingIndicator() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,9 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               height: MediaQuery.of(context).size.height * 2 / 3,
               padding: const EdgeInsets.all(20.0),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
@@ -168,15 +162,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                               labelText: 'Email',
                               labelStyle:
-                                  const TextStyle(color: Color(0xFF9DB1A3)),
-                              fillColor: const Color(0xFFDAEEE0),
+                                  TextStyle(color: Theme.of(context).colorScheme.outline),
+                              fillColor: Theme.of(context).colorScheme.primary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(40),
                               ),
                             ),
-                            style: const TextStyle(color: Color(0xFF9DB1A3)),
+                            style: TextStyle(color: Theme.of(context).colorScheme.outline),
                             onChanged: (value) {
                               setState(() {
                                 _email = value;
@@ -197,8 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                               labelText: 'Password',
                               labelStyle:
-                                  const TextStyle(color: Color(0xFF9DB1A3)),
-                              fillColor: const Color(0xFFDAEEE0),
+                                  TextStyle(color: Theme.of(context).colorScheme.outline),
+                              fillColor: Theme.of(context).colorScheme.primary,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
@@ -209,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _obscurePassword
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color: const Color(0xFF9DB1A3),
+                                  color: Theme.of(context).colorScheme.outline,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -218,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
                             ),
-                            style: const TextStyle(color: Color(0xFF9DB1A3)),
+                            style: TextStyle(color: Theme.of(context).colorScheme.outline),
                             onChanged: (value) {
                               setState(() {
                                 _password = value;
@@ -238,51 +232,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   TextButton(
                     onPressed: _handleRegister,
-                    child: const Text('Sign Up',
-                        style: TextStyle(color: Color(0xFF62A675))),
+                    child: Text('Sign Up',
+                        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                   ),
                   const SizedBox(height: 10),
                   if (_error.isNotEmpty)
                     Text(
                       _error,
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   Center(
                     child: ElevatedButton(
                       onPressed: _handleLogin,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF95D6A8),
-                        foregroundColor: const Color(0xFF62A675),
+                        backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
                         textStyle: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Prompt',
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 30),
                       ),
                       child: const Text('Login'),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Row(
+                  Row(
                     children: [
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Color(0xFFDAEEE0),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         'Or Login with',
-                        style: TextStyle(color: Color(0xFF95D6A8)),
+                        style: TextStyle(color: Theme.of(context).colorScheme.surfaceTint),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Color(0xFFDAEEE0),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],

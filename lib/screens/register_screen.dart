@@ -41,14 +41,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             email: _email,
             password: _password,
           );
-          
+
           appUser.User user = appUser.User(
             uid: userCredential.user!.uid,
             username: _username,
             email: _email,
             firstname: _firstname,
             lastname: _lastname,
-            profilePictureUrl: 'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/default-pfp.png?alt=media&token=016ca8b1-0568-45c3-bdfb-0bdadcba68ea',
+            profilePictureUrl:
+                'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/default-pfp.png?alt=media&token=016ca8b1-0568-45c3-bdfb-0bdadcba68ea',
           );
 
           await FirebaseFirestore.instance
@@ -100,15 +101,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Email',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               onChanged: (value) {
                 setState(() {
                   _email = value;
@@ -127,15 +129,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Username',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(40),
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               onChanged: (value) {
                 setState(() {
                   _username = value;
@@ -149,61 +152,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'First Name',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(40),
+            Row(
+              // Row to hold First Name and Last Name fields
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.outline),
+                      fillColor: Theme.of(context).colorScheme.primary,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.outline),
+                    onChanged: (value) {
+                      setState(() {
+                        _firstname = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a first name';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
-              onChanged: (value) {
-                setState(() {
-                  _firstname = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a first name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Last Name',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(40),
+                const SizedBox(
+                    width: 10), // Add a space between the text fields
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.outline),
+                      fillColor: Theme.of(context).colorScheme.primary,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                    ),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.outline),
+                    onChanged: (value) {
+                      setState(() {
+                        _lastname = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a last name';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
-              onChanged: (value) {
-                setState(() {
-                  _lastname = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a last name';
-                }
-                return null;
-              },
+              ],
             ),
             const SizedBox(height: 20),
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Password',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -212,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                    color: const Color(0xFF9DB1A3),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   onPressed: () {
                     setState(() {
@@ -221,7 +239,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               onChanged: (value) {
                 setState(() {
                   _password = value;
@@ -239,8 +257,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -251,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     _obscureConfirmPassword
                         ? Icons.visibility
                         : Icons.visibility_off,
-                    color: const Color(0xFF9DB1A3),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   onPressed: () {
                     setState(() {
@@ -260,7 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               onChanged: (value) {
                 setState(() {
                   _confirmPassword = value;
@@ -278,7 +297,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
               Text(
                 _error,
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ],
             const SizedBox(height: 20),
@@ -286,8 +305,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: ElevatedButton(
                 onPressed: _handleRegister,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF95D6A8),
-                  foregroundColor: const Color(0xFF62A675),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                 ),
