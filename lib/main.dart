@@ -52,7 +52,7 @@ Future<void> main() async {
           ),
           bodyLarge: TextStyle(
             color: Color(0xFF070A07),
-            fontSize: 24,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
             fontFamily: 'Prompt',
           ),
