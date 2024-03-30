@@ -13,34 +13,6 @@ import 'package:mobile_project/widgets/search_field.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_project/models/user.dart' as app_user;
 
-final List<Map<String, dynamic>> plans = [
-  {
-    'name': 'Sud ton kon yang ter1',
-    'date': DateTime(2024, 4, 5, 8, 0),
-    'image': 'test-planner.jpg',
-  },
-  {
-    'name': 'Sud ton kon yang ter2',
-    'date': DateTime(2024, 4, 5, 8, 0),
-    'image': 'test-planner.jpg',
-  },
-  {
-    'name': 'Sud ton kon yang ter3',
-    'date': DateTime(2024, 4, 5, 8, 0),
-    'image': 'test-planner.jpg',
-  },
-  {
-    'name': 'Sud ton kon yang ter4',
-    'date': DateTime(2024, 4, 5, 8, 0),
-    'image': 'test-planner.jpg',
-  },
-  {
-    'name': 'Sud ton kon yang ter5',
-    'date': DateTime(2024, 4, 5, 8, 0),
-    'image': 'test-planner.jpg',
-  },
-];
-
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
 
@@ -188,7 +160,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 MediaQuery.of(context).size.height * 0.78),
             child: GestureDetector(
               onTap: () {
-                _createPlannerBottomSheet(context);
+                _createPlannerBottomSheet(context, currentUser);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -225,11 +197,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  Future _createPlannerBottomSheet(BuildContext context) async {
+  Future _createPlannerBottomSheet(BuildContext context, CurrentUser cuser) async {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      builder: (context) => const CreatePlanner(),
+      builder: (context) => CreatePlanner(cuser: cuser),
     );
   }
 }
