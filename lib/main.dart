@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_project/firebase_options.dart';
 import 'package:mobile_project/screens/login_screen.dart';
 import 'package:mobile_project/screens/home_screen.dart';
@@ -83,6 +84,9 @@ Future<void> main() async {
           background: Color(0xFFF3F8FF),
           primary: Color(0xFFDAEEE0),
           secondary: Color(0xFFA6CEB1),
+          outline: Color(0xFF9DB1A3),
+          surfaceTint: Color(0xFF95D6A8),
+          error: Color(0xFFD32F2F),
         ),
       ),
       debugShowCheckedModeBanner: false,

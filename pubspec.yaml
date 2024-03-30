@@ -96,6 +96,9 @@ flutter:
         - asset: assets/fonts/Prompt-Regular.ttf
         - asset: assets/fonts/Prompt-Italic.ttf
           style: italic
+    - family: Roboto
+      fonts: 
+        - asset: assets/fonts/Roboto-Medium.ttf
 
   #   - family: Schyler
   #     fonts:
