@@ -50,20 +50,23 @@ class User {
 
   void updateProfilePicture(String url) {
     profilePictureUrl = url;
-    _updateUserInFirestore(); 
+    _updateUserInFirestore();
   }
 
   void updateUsername(String username) {
     this.username = username;
-    _updateUserInFirestore(); 
+    _updateUserInFirestore();
   }
 
-Future<void> updateEmail(String newEmail) async {
+  Future<void> updateEmail(String newEmail) async {
     final user = FirebaseAuth.instance.currentUser;
     await user?.verifyBeforeUpdateEmail(newEmail);
   }
 
   Future<void> _updateUserInFirestore() async {
-    await FirebaseFirestore.instance.collection('users').doc(uid).update(toMap());
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update(toMap());
   }
 }

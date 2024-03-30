@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,9 @@ import 'package:mobile_project/firebase_options.dart';
 class FirebaseLoader {
   static final CollectionReference<Map<String, dynamic>> placeRef =
       FirebaseFirestore.instance.collection('place');
+
+  static final CollectionReference<Map<String, dynamic>> plannerRef =
+      FirebaseFirestore.instance.collection('planner');
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> loadData({
     required CollectionReference<Map<String, dynamic>> reference,
@@ -23,6 +27,13 @@ class FirebaseLoader {
     required Object equalValue,
   }) {
     return placeRef.where(fieldName, isEqualTo: equalValue).snapshots();
+  }
+
+  static Future<void> deleteData({
+    required CollectionReference<Map<String, dynamic>> reference,
+    required String deletedId,
+  }) async {
+    await reference.doc(deletedId).delete();
   }
 
   static Column createWaitAnimation(
@@ -46,19 +57,28 @@ class FirebaseLoader {
       ],
     );
   }
+
+  static String idRandomGenerator(int idSize) {
+    String upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    String lowerCase = upperCase.toLowerCase();
+    String num = '0123456789';
+
+    String combind = upperCase + lowerCase + num;
+
+    String id = '';
+
+    for (int i = 0; i < idSize; i++) {
+      int rand = math.Random().nextInt(combind.length);
+      id += combind[rand];
+    }
+
+    return id;
+  }
 }
 
 // void main(List<String> args) async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-//   FirebaseLoader.placeRef
-//       .doc('VQv8dUEHEp1XIIpsb7iM')
-//       .collection('opinion')
-//       .get()
-//       .then((value) {
-//     for (var element in value.docs) {
-//       log('${element.id} : ${element.data().toString()}');
-//     }
-//   });
+//   log(FirebaseLoader.idRandomGenerator(28));
 // }
