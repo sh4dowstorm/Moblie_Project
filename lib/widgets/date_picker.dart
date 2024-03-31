@@ -62,8 +62,8 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.parse(widget.datePickerController.text),
-      firstDate: DateTime(DateTime.now().year),
-      lastDate: DateTime(DateTime.now().year + 1),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 3),
     );
 
     log(pickedDate.toString());
