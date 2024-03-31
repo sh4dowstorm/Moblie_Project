@@ -16,6 +16,7 @@ import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
 import 'package:mobile_project/models/user.dart' as user_app;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class CreatePlanner extends StatefulWidget {
@@ -95,18 +96,9 @@ class _CreatePlannerState extends State<CreatePlanner> {
               // image
               GestureDetector(
                 onTap: () async {
-                  // take photo
-                  ImagePicker imagePicker = ImagePicker();
-                  XFile? image =
-                      await imagePicker.pickImage(source: ImageSource.camera);
-
-                  if (image != null) {
-                    setState(() {
-                      Image pic = Image.file(File(image.path));
-                      _image = pic.image;
-                      _imagePath = image.path;
-                    });
-                  }
+                  await _showImageSourceOptions(
+                    context,
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -243,6 +235,51 @@ class _CreatePlannerState extends State<CreatePlanner> {
         ],
       ),
     );
+  }
+
+  Future<void> _showImageSourceOptions(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Camera'),
+            onTap: () => _pickImage(ImageSource.camera),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Gallery'),
+            onTap: () => _pickImage(ImageSource.gallery),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    // Request camera and storage permissions
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.storage,
+    ].request();
+
+    // Handle permission results (If both permissions are granted)
+    if (statuses[Permission.camera]!.isGranted &&
+        statuses[Permission.storage]!.isGranted) {
+      final XFile? pickedFile = await ImagePicker().pickImage(source: source);
+      if (pickedFile != null) {
+          setState(() {
+            Image pic = Image.file(File(pickedFile.path));
+            _image = pic.image;
+            _imagePath = pickedFile.path;
+          });
+        Navigator.pop(context);
+      }
+    } else {
+      // Show an error message or guide the user to enable permissions
+      print('Permissions denied.');
+    }
   }
 
   Future<void> _dialogSearch(BuildContext context) async {
