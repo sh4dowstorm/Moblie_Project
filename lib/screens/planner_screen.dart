@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -12,6 +13,9 @@ import 'package:mobile_project/widgets/plan_item.dart';
 import 'package:mobile_project/widgets/search_field.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_project/models/user.dart' as app_user;
+
+const String initImagePath =
+    'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/test-planner.jpg?alt=media&token=1fc2f4f6-9029-445c-9465-fc2b68204a99';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -115,13 +119,15 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                   endActionPane: ActionPane(
                                     motion: const DrawerMotion(),
                                     dismissible: DismissiblePane(
-                                      onDismissed: () {
+                                      onDismissed: () async {
                                         // remove plan from firebase
-                                        setState(() async {
-                                          await FirebaseLoader.deleteData(
-                                              reference: firebaseRef,
-                                              deletedId: rootData.id);
-                                        });
+                                        await FirebaseLoader.deleteData(
+                                            reference: firebaseRef,
+                                            deletedId: rootData.id);
+                                        await FirebaseLoader.deleteImage(
+                                          imageUrl: planData['trip-image'],
+                                          exceptPath: initImagePath,
+                                        );
                                       },
                                     ),
                                     children: [
@@ -129,13 +135,14 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                         backgroundColor: Colors.red,
                                         icon: Icons.delete_rounded,
                                         label: 'Delete',
-                                        onPressed: (context) {
-                                          setState(() async {
-                                            // remove plan from firebase
-                                            await FirebaseLoader.deleteData(
-                                                reference: firebaseRef,
-                                                deletedId: rootData.id);
-                                          });
+                                        onPressed: (context) async {
+                                          await FirebaseLoader.deleteData(
+                                              reference: firebaseRef,
+                                              deletedId: rootData.id);
+                                          await FirebaseLoader.deleteImage(
+                                            imageUrl: planData['trip-image'],
+                                            exceptPath: initImagePath,
+                                          );
                                         },
                                       ),
                                     ],

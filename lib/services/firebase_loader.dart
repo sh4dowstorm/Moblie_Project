@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobile_project/firebase_options.dart';
@@ -51,6 +52,15 @@ class FirebaseLoader {
     }
 
     return id;
+  }
+
+  static Future<void> deleteImage({
+    required String imageUrl,
+    String? exceptPath,
+  }) async {
+    if (exceptPath == imageUrl) return;
+    Reference imageRef = FirebaseStorage.instance.refFromURL(imageUrl);
+    await imageRef.delete();
   }
 }
 
