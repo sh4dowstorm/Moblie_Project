@@ -40,10 +40,15 @@ class _CreatePlannerState extends State<CreatePlanner> {
   String? _imagePath;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     _datePickerController.text =
         formatDate(DateTime.now(), [yyyy, '-', mm, '-', dd]);
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.vertical(
