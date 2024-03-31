@@ -56,25 +56,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  String? _text;
+  String _text = '';
   int _currentCategory = -1;
-  late final AnimationController _errorAnimationController;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    // initialize animaiton controller
-    _errorAnimationController = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _errorAnimationController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,14 +89,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             changeValue: (value) {
               setState(() {
                 log(value.toString());
-                _text = value;
+                _text = value ?? '';
               });
             },
           ),
         ),
 
         // test text
-        SliverToBoxAdapter(child: Text(_text ?? "")),
         const SliverToBoxAdapter(
           child: SizedBox(
             height: 20,
@@ -175,15 +157,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           builder: (context, placeSnapshot) {
             if (placeSnapshot.hasData) {
               final placeData = placeSnapshot.data!.docs;
+              List<QueryDocumentSnapshot<Map<String, dynamic>>> matchPlace = [];
+
+              for (var place in placeData) {
+                String placeName = place.data()['name'];
+                if (placeName.contains(_text)) {
+                  matchPlace.add(place);
+                }
+              }
 
               return SliverGrid.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 0.8,
                 ),
-                itemCount: placeData.length,
+                itemCount: matchPlace.length,
                 itemBuilder: (context, index) {
-                  final currentPlace = placeData[index].data();
+                  final currentPlace = matchPlace[index].data();
 
                   return FutureBuilder(
                     future: FirebaseLoader.placeRef
@@ -220,11 +210,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               );
             } else if (placeSnapshot.connectionState ==
                 ConnectionState.waiting) {
-              return const SliverToBoxAdapter(child: CircularProgressIndicator());
+              return const SliverToBoxAdapter(
+                  child: CircularProgressIndicator());
             } else {
               // incase having error
               return SliverToBoxAdapter(
-                child: SliverToBoxAdapter(child: Text(placeSnapshot.error.toString())),
+                child: SliverToBoxAdapter(
+                    child: Text(placeSnapshot.error.toString())),
               );
             }
           },

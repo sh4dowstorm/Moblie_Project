@@ -84,12 +84,22 @@ class _PlannerScreenState extends State<PlannerScreen> {
                       ),
                     );
                   } else {
+                    List<QueryDocumentSnapshot<Map<String, dynamic>>>
+                        matchPlan = [];
+
+                    for (var plan in planners.data!.docs) {
+                      String tripName = plan.data()['trip-name'];
+                      if (tripName.contains(_text)) {
+                        matchPlan.add(plan);
+                      }
+                    }
+
                     return SlidableAutoCloseBehavior(
                       closeWhenOpened: true,
                       child: SliverList.builder(
-                        itemCount: planners.data!.docs.length,
+                        itemCount: matchPlan.length,
                         itemBuilder: (context, index) {
-                          final rootData = planners.data!.docs[index];
+                          final rootData = matchPlan[index];
                           final planData = rootData.data();
                           final firebaseRef = FirebaseLoader.plannerRef
                               .doc(currentUser.inUse.uid)
@@ -133,7 +143,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                   child: PlanItem(
                                     planName: planData['trip-name'],
                                     image: planData['trip-image'],
-                                    date: DateTime.fromMillisecondsSinceEpoch(planData['trip-date'].millisecondsSinceEpoch),
+                                    date: DateTime.fromMillisecondsSinceEpoch(
+                                        planData['trip-date']
+                                            .millisecondsSinceEpoch),
                                   ),
                                 ),
                               ),
@@ -197,7 +209,8 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  Future _createPlannerBottomSheet(BuildContext context, CurrentUser cuser) async {
+  Future _createPlannerBottomSheet(
+      BuildContext context, CurrentUser cuser) async {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
