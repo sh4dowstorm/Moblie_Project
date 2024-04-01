@@ -1,15 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:date_format/date_format.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
 import 'package:mobile_project/screens/search_place_for_plan.dart';
-import 'package:mobile_project/models/user.dart';
 
 class PlannerDetailScreen extends StatefulWidget {
   const PlannerDetailScreen({super.key, required this.planId});
@@ -56,7 +55,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
             _planName = data['trip-name'];
             _planDate = data['trip-date'].toDate();
             _datePickerController.text =
-                formatDate(_planDate, [dd, '/', mm, '/', yyyy]);
+                formatDate(_planDate, [yyyy, '-', mm, '-', dd]);
             _places = List<String>.from(data['trip-list']);
           });
         }
@@ -90,62 +89,62 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
   void _toggleEditMode() {
     setState(() {
       _isEditingName = !_isEditingName;
+      if (!_isEditingName) {
+        _handleChangePlannerName();
+      }
     });
   }
 
   void _handleChangePlannerName() {
-    setState(() {
-      _planName = _plannerNameController.text;
-      _saveToFirestore();
-      _toggleEditMode();
-    });
-  }
+  log('Planner name changed to: $_plannerNameController.text'); 
+  setState(() {
+    _planName = _plannerNameController.text;
+    _saveToFirestore();
+  });
+}
 
   void _handleChangePlanDate(DateTime newDate) {
+    log('Plan date changed to: $newDate');
     setState(() {
       _planDate = newDate;
       _saveToFirestore();
     });
   }
 
-  void _addPlace(String placeId) {
-    setState(() {
-      _places.add(placeId);
-      _saveToFirestore();
-    });
-  }
-
   void _removePlace(String placeId) {
-    setState(() {
+    setState(() async {
       _places.remove(placeId);
-      _saveToFirestore();
+      await _saveToFirestore();
     });
   }
 
   Future<void> _saveToFirestore() async {
-  log('Saving to Firestore');
-  try {
-    final uid = await _getCurrentUserId();
-    if (uid != null) {
-      final docRef = FirebaseFirestore.instance
-          .collection('planner') 
-          .doc(uid)
-          .collection('plans')
-          .doc(widget.planId);
+    log('Saving to Firestore');
+    try {
+      final uid = await _getCurrentUserId();
+      if (uid != null) {
+        final docRef = FirebaseFirestore.instance
+            .collection('planner')
+            .doc(uid)
+            .collection('plans')
+            .doc(widget.planId);
 
-      // Only update if necessary to reduce writes
-      if (_isEditingName || _planName != _plannerNameController.text) {
-        await docRef.update({
-          'trip-name': _planName,
-          'trip-date': _planDate, 
-          'trip-list': _places,
-        });
+        // Create an update map to only modify changed fields
+        final updateData = <String, dynamic>{};
+        updateData['trip-name'] = _planName;
+        updateData['trip-date'] = _planDate;
+        updateData['trip-list'] = _places;
+
+        // Update only if there are changes
+        if (updateData.isNotEmpty) {
+          await docRef.update(updateData);
+        }
       }
+    } catch (e) {
+      log('Error updating Firestore: $e');
+      // Consider showing an error dialog
     }
-  } catch (e) {
-    print('Error updating Firestore: $e');
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -158,12 +157,11 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Ionicons.chevron_back_outline),
-                  onPressed: () async {
-                    await _saveToFirestore();
-                    Navigator.pop(context);
-                  }
-                ),
+                    icon: const Icon(Ionicons.chevron_back_outline),
+                    onPressed: () async {
+                      await _saveToFirestore();
+                      Navigator.pop(context);
+                    }),
                 const SizedBox(width: 20),
                 Text(
                   "Planner Detail",
@@ -227,10 +225,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                       DatePickerCustom(
                         datePickerController: _datePickerController,
                         onDateChanged: (DateTime newDate) {
-                          setState(() {
-                            _datePickerController.text =
-                                formatDate(newDate, [dd, '/', mm, '/', yyyy]);
-                          });
+                          _handleChangePlanDate(newDate);
                         },
                       ),
                       SizedBox(width: MediaQuery.of(context).size.width * 0.23),

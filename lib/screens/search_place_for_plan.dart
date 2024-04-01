@@ -59,7 +59,7 @@ class _SearchPlaceState extends State<SearchPlace> {
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.only(left: 20),
                   labelStyle: Theme.of(context).textTheme.labelSmall,
-                  labelText: 'Your Plan',
+                  labelText: 'Search for place',
                 ),
               ),
             ),
