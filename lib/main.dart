@@ -7,6 +7,7 @@ import 'package:mobile_project/screens/home_screen.dart';
 // import 'package:mobile_project/screens/main_layout_screen.dart';
 // import 'package:mobile_project/screens/setting_screen.dart';
 // import 'package:mobile_project/screens/edit_account_screen.dart';
+// import 'package:mobile_project/screens/planner_detail_screen.dart';
 
 Future<void> main() async {
   // initial firebase
@@ -22,6 +23,7 @@ Future<void> main() async {
         '/home': (context) => HomeScreen(),
         // '/setting': (context) => SettingScreen(),
         // '/edit_account': (context) => EditAccountScreen(),
+        // '/planner_detail': (context) => const PlannerDetailScreen(),
       },
       theme: ThemeData(
         // text theme

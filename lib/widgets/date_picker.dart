@@ -7,7 +7,7 @@ import 'package:ionicons/ionicons.dart';
 class DatePickerCustom extends StatefulWidget {
   const DatePickerCustom({
     super.key,
-    required this.datePickerController,
+    required this.datePickerController, required void Function(DateTime newDate) onDateChanged,
   });
 
   final TextEditingController datePickerController;

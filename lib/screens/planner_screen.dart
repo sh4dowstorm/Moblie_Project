@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/create_planner_screen.dart';
+import 'package:mobile_project/screens/planner_detail_screen.dart';
 import 'package:mobile_project/services/current_user.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/plan_item.dart';
@@ -110,6 +111,13 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               .collection('plans');
 
                           return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context, // Use the current context
+                                MaterialPageRoute(
+                                    builder: (context) => PlannerDetailScreen(planId: rootData.id)),
+                              );
+                            },
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 8),
                               child: ClipRRect(

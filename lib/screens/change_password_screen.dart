@@ -67,8 +67,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Current Password',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -79,7 +79,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _obscureCurrentPassword
                         ? Icons.visibility
                         : Icons.visibility_off,
-                    color: const Color(0xFF9DB1A3),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   onPressed: () {
                     setState(() {
@@ -88,7 +88,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               controller: _currentPasswordController,
               obscureText: _obscureCurrentPassword,
               validator: (value) {
@@ -102,8 +102,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'New Password',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -114,7 +114,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _obscureNewPassword
                         ? Icons.visibility
                         : Icons.visibility_off,
-                    color: const Color(0xFF9DB1A3),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   onPressed: () {
                     setState(() {
@@ -123,7 +123,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               controller: _newPasswordController,
               obscureText: _obscureNewPassword,
               validator: (value) {
@@ -137,8 +137,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Confirm New Password',
-                labelStyle: const TextStyle(color: Color(0xFF9DB1A3)),
-                fillColor: const Color(0xFFDAEEE0),
+                labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
+                fillColor: Theme.of(context).colorScheme.primary,
                 filled: true,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
@@ -149,7 +149,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     _obscureConfirmPassword
                         ? Icons.visibility
                         : Icons.visibility_off,
-                    color: const Color(0xFF9DB1A3),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   onPressed: () {
                     setState(() {
@@ -158,7 +158,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
               ),
-              style: const TextStyle(color: Color(0xFF9DB1A3)),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
               controller: _confirmPasswordController,
               obscureText: _obscureConfirmPassword,
               validator: (value) {
@@ -174,7 +174,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(
                   _errorMessage,
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
           ],
@@ -184,8 +184,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ElevatedButton(
           onPressed: _handleSavePassword,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF95D6A8),
-            foregroundColor: const Color(0xFF62A675),
+            backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
           ),
           child: const Text('Change Password'),

@@ -148,6 +148,12 @@ class _CreatePlannerState extends State<CreatePlanner> {
                   // date picker
                   DatePickerCustom(
                     datePickerController: _datePickerController,
+                    onDateChanged: (DateTime newDate) {
+                      setState(() {
+                        _datePickerController.text =
+                            formatDate(newDate, [yyyy, '-', mm, '-', dd]);
+                      });
+                    },
                   ),
                 ],
               ),
@@ -269,11 +275,11 @@ class _CreatePlannerState extends State<CreatePlanner> {
         statuses[Permission.storage]!.isGranted) {
       final XFile? pickedFile = await ImagePicker().pickImage(source: source);
       if (pickedFile != null) {
-          setState(() {
-            Image pic = Image.file(File(pickedFile.path));
-            _image = pic.image;
-            _imagePath = pickedFile.path;
-          });
+        setState(() {
+          Image pic = Image.file(File(pickedFile.path));
+          _image = pic.image;
+          _imagePath = pickedFile.path;
+        });
         Navigator.pop(context);
       }
     } else {

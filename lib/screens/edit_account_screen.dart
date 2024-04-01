@@ -51,12 +51,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       builder: (context) => Wrap(
         children: [
           ListTile(
-            leading: const Icon(Icons.camera_alt),
+            leading: const Icon(Ionicons.camera_outline),
             title: const Text('Camera'),
             onTap: () => _pickImage(ImageSource.camera),
           ),
           ListTile(
-            leading: const Icon(Icons.photo_library),
+            leading: const Icon(Ionicons.images_outline),
             title: const Text('Gallery'),
             onTap: () => _pickImage(ImageSource.gallery),
           ),
@@ -156,7 +156,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           content: Text('Error updating profile: ${e.message}'),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context), // Dismiss the dialog
+                onPressed: () => Navigator.pop(context),
                 child: Text('OK')),
           ],
         ),
