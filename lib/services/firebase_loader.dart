@@ -16,6 +16,9 @@ class FirebaseLoader {
   static final CollectionReference<Map<String, dynamic>> plannerRef =
       FirebaseFirestore.instance.collection('planner');
 
+  static final CollectionReference<Map<String, dynamic>> userRef =
+      FirebaseFirestore.instance.collection('users');
+
   static Stream<QuerySnapshot<Map<String, dynamic>>> loadData({
     required CollectionReference<Map<String, dynamic>> reference,
   }) {
@@ -61,6 +64,14 @@ class FirebaseLoader {
     if (exceptPath == imageUrl) return;
     Reference imageRef = FirebaseStorage.instance.refFromURL(imageUrl);
     await imageRef.delete();
+  }
+
+  static Future<void> updateData({
+    required CollectionReference<Map<String, dynamic>> ref,
+    required String docId,
+    required Map<String, dynamic> data,
+  }) async {
+    ref.doc(docId).set(data);
   }
 }
 
