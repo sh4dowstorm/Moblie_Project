@@ -6,10 +6,12 @@ import 'package:ionicons/ionicons.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:mobile_project/screens/place_detail_screen.dart';
+import 'package:mobile_project/services/current_user.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/widgets/place_display.dart';
 import 'package:mobile_project/widgets/search_field.dart';
 import 'package:mobile_project/widgets/place_category.dart';
+import 'package:provider/provider.dart';
 
 const Map<int, String> topicLabel = {
   -1: 'Top',
@@ -175,36 +177,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 itemBuilder: (context, index) {
                   final currentPlace = matchPlace[index].data();
 
-                  return FutureBuilder(
-                    future: FirebaseLoader.placeRef
-                        .doc(placeData[index].id)
-                        .collection('opinion')
-                        .get()
-                        .then((value) {
-                      return currentPlace['score'] / value.docs.length;
-                    }),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return GestureDetector(
-                          onTap: () =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PlaceDetailScreen(
-                                        placeId: placeData[index].id,
-                                      ))),
-                          child: PlaceDisplay(
-                            image: currentPlace['image'],
-                            located: currentPlace['located'],
-                            place: currentPlace['name'],
-                            score: snapshot.data ?? 0.0,
-                          ),
-                        );
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else {
-                        return Text(snapshot.error.toString());
-                      }
-                    },
+                  return Consumer<CurrentUser>(
+                    builder: (context, value, child) => FutureBuilder(
+                      future: FirebaseLoader.placeRef
+                          .doc(placeData[index].id)
+                          .collection('opinion')
+                          .get()
+                          .then((value) {
+                        return currentPlace['score'] / value.docs.length;
+                      }),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return GestureDetector(
+                            onTap: () =>
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => PlaceDetailScreen(
+                                          placeId: placeData[index].id,
+                                          user: value.inUse,
+                                        ))),
+                            child: PlaceDisplay(
+                              image: currentPlace['image'],
+                              located: currentPlace['located'],
+                              place: currentPlace['name'],
+                              score: snapshot.data ?? 0.0,
+                            ),
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          return Text(snapshot.error.toString());
+                        }
+                      },
+                    ),
                   );
                 },
               );

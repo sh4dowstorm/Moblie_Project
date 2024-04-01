@@ -2,16 +2,20 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mobile_project/screens/opinion_screen.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:mobile_project/models/user.dart' as app_user;
 
 class PlaceDetailScreen extends StatefulWidget {
   const PlaceDetailScreen({
     super.key,
     required this.placeId,
+    required this.user,
   });
 
   final String placeId;
+  final app_user.User user;
 
   @override
   State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
@@ -219,9 +223,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                               ),
 
                               // go to rated page
-                              const IconButton(
-                                onPressed: null,
-                                icon: Icon(Icons.keyboard_arrow_right_rounded),
+                              IconButton(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) => OpinionScreen(
+                                            placeId: widget.placeId,
+                                            user: widget.user,
+                                          )),
+                                ),
+                                icon: const Icon(
+                                    Icons.keyboard_arrow_right_rounded),
                               ),
                             ],
                           ),
