@@ -96,12 +96,12 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
   }
 
   void _handleChangePlannerName() {
-  log('Planner name changed to: $_plannerNameController.text'); 
-  setState(() {
-    _planName = _plannerNameController.text;
-    _saveToFirestore();
-  });
-}
+    log('Planner name changed to: $_plannerNameController.text');
+    setState(() {
+      _planName = _plannerNameController.text;
+      _saveToFirestore();
+    });
+  }
 
   Future<void> _handleChangePlanDate(DateTime newDate) async {
     setState(() {
@@ -109,13 +109,6 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
     });
     log('Plan date changed to: $_planDate');
     await _saveToFirestore();
-  }
-
-  void _removePlace(String placeId) {
-    setState(() async {
-      _places.remove(placeId);
-      await _saveToFirestore();
-    });
   }
 
   Future<void> _saveToFirestore() async {
@@ -132,7 +125,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
         // Create an update map to only modify changed fields
         final updateData = <String, dynamic>{};
         updateData['trip-name'] = _planName;
-        updateData['trip-date'] = Timestamp.fromDate(_planDate) ;
+        updateData['trip-date'] = Timestamp.fromDate(_planDate);
         updateData['trip-list'] = _places;
 
         // Update only if there are changes
@@ -253,18 +246,38 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                           for (var i in snapshot.data!.docs) {
                             placeData.putIfAbsent(i.id, () => i.data());
                           }
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _places.length,
-                            itemBuilder: (context, index) {
-                              return PlanPlace(
-                                name: placeData[_places[index]]!['name'],
-                                image: placeData[_places[index]]!['image'],
-                                located: placeData[_places[index]]!['located'],
-                                removeFunc: () => _removePlace(_places[index]),
-                              );
-                            },
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            width: MediaQuery.of(context).size.width,
+                            child: ReorderableListView.builder(
+                              itemBuilder: (context, index) {
+                                return ReorderableDragStartListener(
+                                  key: Key(_places[index]),
+                                  index: index,
+                                  child: PlanPlace(
+                                    image: placeData[_places[index]]!['image'],
+                                    name: placeData[_places[index]]!['name'],
+                                    located:
+                                        placeData[_places[index]]!['located'],
+                                    removeFunc: () {
+                                      setState(() {
+                                        _places.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                              itemCount: _places.length,
+                              onReorder: (oldIndex, newIndex) {
+                                if (oldIndex < newIndex) {
+                                  newIndex -= 1;
+                                }
+                                setState(() {
+                                  final place = _places.removeAt(oldIndex);
+                                  _places.insert(newIndex, place);
+                                });
+                              },
+                            ),
                           );
                         }
                       }),
