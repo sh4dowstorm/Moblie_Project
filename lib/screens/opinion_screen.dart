@@ -193,8 +193,8 @@ class _OpinionScreenState extends State<OpinionScreen> {
                                   onTap: () {
                                     _createPopup(
                                       context: context,
-                                      oldComment: cuserOpinion?['comment'],
-                                      oldScore: cuserOpinion?['score'],
+                                      oldComment: cuserOpinion?['comment'] ?? '',
+                                      oldScore: cuserOpinion?['score'] ?? 0,
                                       updateValue: (newComment, newScore) {
                                         // upload data to firebase
                                         FirebaseLoader.updateData(
