@@ -49,8 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => MainLayoutScreen(user: user)),
         );
       } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
         setState(() {
-          _error = e.message ?? 'Login Failed';
+          if (e.code == 'user-not-found') {
+            _error = 'User not found';
+          } else if (e.code == 'wrong-password') {
+            _error = 'Incorrect password';
+          } else {
+            _error = 'Login Failed';
+          }
         });
       }
     }
