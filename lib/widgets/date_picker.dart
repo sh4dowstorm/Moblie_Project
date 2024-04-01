@@ -8,9 +8,11 @@ class DatePickerCustom extends StatefulWidget {
   const DatePickerCustom({
     super.key,
     required this.datePickerController,
+    required this.onDateChanged,
   });
 
   final TextEditingController datePickerController;
+  final Function(DateTime newDate) onDateChanged;
 
   @override
   State<DatePickerCustom> createState() => _DatePickerCustomState();
@@ -38,6 +40,7 @@ class _DatePickerCustomState extends State<DatePickerCustom> {
             changeDate: (pickedDate) {
               setState(() {
                 widget.datePickerController.text = pickedDate;
+                widget.onDateChanged(DateTime.parse(pickedDate));
               });
             },
           );
