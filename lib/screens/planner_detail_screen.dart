@@ -103,12 +103,12 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
   });
 }
 
-  void _handleChangePlanDate(DateTime newDate) {
-    log('Plan date changed to: $newDate');
+  Future<void> _handleChangePlanDate(DateTime newDate) async {
     setState(() {
       _planDate = newDate;
-      _saveToFirestore();
     });
+    log('Plan date changed to: $_planDate');
+    await _saveToFirestore();
   }
 
   void _removePlace(String placeId) {
@@ -132,7 +132,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
         // Create an update map to only modify changed fields
         final updateData = <String, dynamic>{};
         updateData['trip-name'] = _planName;
-        updateData['trip-date'] = _planDate;
+        updateData['trip-date'] = Timestamp.fromDate(_planDate) ;
         updateData['trip-list'] = _places;
 
         // Update only if there are changes
