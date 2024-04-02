@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:lottie/lottie.dart';
@@ -14,8 +12,8 @@ class AboutUsScreen extends StatefulWidget {
 
 class _AboutUsScreenState extends State<AboutUsScreen>
     with TickerProviderStateMixin {
+  // ignore: non_constant_identifier_names
   late final AnimationController _shiba_inuController;
-  late final AnimationController _dinoController;
   late final AnimationController _pikachuController;
 
   @override

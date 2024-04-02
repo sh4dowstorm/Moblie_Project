@@ -5,11 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:mobile_project/screens/planner_screen.dart';
 import 'package:mobile_project/screens/search_place_for_plan.dart';
 import 'package:mobile_project/services/current_user.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
@@ -17,7 +14,6 @@ import 'package:mobile_project/widgets/date_picker.dart';
 import 'package:mobile_project/widgets/place_plan_item.dart';
 import 'package:mobile_project/models/user.dart' as user_app;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
 
 class CreatePlanner extends StatefulWidget {
   const CreatePlanner({Key? key, required this.cuser}) : super(key: key);

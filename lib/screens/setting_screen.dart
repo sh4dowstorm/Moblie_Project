@@ -8,7 +8,6 @@ import 'package:mobile_project/screens/about_us_screen.dart';
 import 'package:mobile_project/screens/edit_account_screen.dart';
 import 'package:mobile_project/widgets/forward_button.dart';
 import 'package:mobile_project/widgets/setting_item.dart';
-import 'package:mobile_project/widgets/setting_switch.dart';
 
 class SettingScreen extends StatefulWidget {
   appUser.User user;
