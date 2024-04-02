@@ -1,11 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:date_format/date_format.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:mobile_project/screens/write_comment.dart';
 import 'package:mobile_project/services/firebase_loader.dart';
 import 'package:mobile_project/models/user.dart' as app_user;
@@ -228,8 +224,8 @@ class _OpinionScreenState extends State<OpinionScreen> {
                                             'image': placeData['image'],
                                             'latitude': placeData['latitude'],
                                             'located': placeData['located'],
-                                            'longtitude':
-                                                placeData['longtitude'],
+                                            'longitude':
+                                                placeData['longitude'],
                                             'name': placeData['name'],
                                             'score': newTotalScore,
                                           },

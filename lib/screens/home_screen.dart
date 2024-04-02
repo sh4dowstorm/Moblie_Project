@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:mobile_project/screens/place_detail_screen.dart';
 import 'package:mobile_project/services/current_user.dart';
@@ -119,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         const SliverToBoxAdapter(
           child: SizedBox(
-            height: 20,
+            height: 30,
           ),
         ),
 
@@ -131,12 +130,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Text(
                 '${topicLabel[_currentCategory]} Destination',
                 style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const IconButton(
-                onPressed: null,
-                icon: Icon(
-                  Icons.filter_alt_rounded,
-                ),
               ),
             ],
           ),
@@ -184,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           .collection('opinion')
                           .get()
                           .then((value) {
-                        return currentPlace['score'] / value.docs.length;
+                        return currentPlace['score'] / ((value.docs.isEmpty) ? 1.0 : value.docs.length);
                       }),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
@@ -199,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               image: currentPlace['image'],
                               located: currentPlace['located'],
                               place: currentPlace['name'],
-                              score: snapshot.data ?? 0.0,
+                              score: snapshot.data?.toDouble() ?? 0.0,
                             ),
                           );
                         } else if (snapshot.connectionState ==

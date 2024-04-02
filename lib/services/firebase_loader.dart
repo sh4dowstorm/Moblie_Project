@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:mobile_project/firebase_options.dart';
 
 class FirebaseLoader {
   static final CollectionReference<Map<String, dynamic>> placeRef =
@@ -74,10 +69,3 @@ class FirebaseLoader {
     ref.doc(docId).set(data);
   }
 }
-
-// void main(List<String> args) async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-//   log(FirebaseLoader.idRandomGenerator(28));
-// }
