@@ -15,18 +15,22 @@ class AboutUsScreen extends StatefulWidget {
 class _AboutUsScreenState extends State<AboutUsScreen>
     with TickerProviderStateMixin {
   late final AnimationController _shiba_inuController;
+  late final AnimationController _dinoController;
+  late final AnimationController _pikachuController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _shiba_inuController = AnimationController(vsync: this);
+    _pikachuController = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     _shiba_inuController.dispose();
+    _pikachuController.dispose();
     super.dispose();
   }
 
@@ -99,7 +103,59 @@ class _AboutUsScreenState extends State<AboutUsScreen>
                   ),
                 },
               ],
-            )
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            _createLayout(
+              imageLink:
+                  'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/profile_shadowstorm.jpg?alt=media&token=d505d0fd-55d2-44e7-ad72-24b5c939c6ec',
+              name: 'นาย คณิศร ศรีสว่าง',
+              id: '6510450216',
+              animationPath: 'assets/animations/pikachu.json',
+              animationController: _pikachuController,
+              contact: [
+                {
+                  'url':
+                      'https://web.facebook.com/profile.php?id=100010873320754',
+                  'icon': const Icon(
+                    LineIcons.facebook,
+                    size: 40,
+                    color: Color(0xFF0866FF),
+                  ),
+                },
+                {
+                  'url': 'https://www.instagram.com/tom_khanisorn/',
+                  'icon': ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [
+                        Color(0xFF405de6),
+                        Color(0xFF5851db),
+                        Color(0xFF833ab4),
+                        Color(0xFFc13584),
+                        Color(0xFFe1306c),
+                        Color(0xFFfd1d1d),
+                      ],
+                      begin: Alignment.topRight,
+                    ).createShader(bounds),
+                    child: const Icon(
+                      LineIcons.instagram,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                },
+                {
+                  'url': 'https://github.com/sh4dowstorm',
+                  'icon': const Icon(
+                    LineIcons.github,
+                    size: 40,
+                    color: Color(0xFF0A0A0B),
+                  ),
+                },
+              ],
+            ),
+
           ],
         ),
       ),
@@ -170,7 +226,7 @@ class _AboutUsScreenState extends State<AboutUsScreen>
                     height: 8,
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.width * 0.2,
+                    height: MediaQuery.of(context).size.width * 0.25,
                     // animation
                     child:
                         (animationPath != null && animationController != null)
