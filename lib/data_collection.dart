@@ -1,15 +1,5 @@
 // TODO: {0 = beach, 1 = forest, 2 = city, 3 = resturent, 4 = hotel}
 
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:date_format/date_format.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mobile_project/firebase_options.dart';
-
 List<Map<String, dynamic>> placesData = [
   //TODO: Beach
   {
@@ -325,23 +315,3 @@ List<String> images = [
   "สิริตรังบูทีค.webp",
   "นกฮูกเฮาส์.webp",
 ];
-
-Future<void> uploadData() async {
-  log('${images.length}, ${placesData.length}');
-}
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // for (int i = 0; i < placesData.length; i++) {
-  // upload image
-  File imgFile = File('./assets/images/สิริตรังบูทีค.webp');
-  String uniqueFile = DateTime.now().millisecondsSinceEpoch.toString();
-
-  Reference root = FirebaseStorage.instance.ref();
-  Reference dir = root.child('place-images');
-  Reference imgStorage = dir.child(uniqueFile);
-
-    await imgStorage.putFile(imgFile);
-  // }
-}
