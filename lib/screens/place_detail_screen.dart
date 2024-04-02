@@ -79,8 +79,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
             } else {
               Map<String, dynamic> place = snapshort.data!;
 
+              log(place.toString());
+
               LatLng onmap = LatLng(double.parse(place['latitude']),
-                  double.parse(place['longtitude']));
+                  double.parse(place['longitude']));
               String detail = place['description'] as String;
               detail = detail.replaceAll(r'\t', '\t').replaceAll(r'\n', '\n');
 
@@ -204,7 +206,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                                 place['score'] as int;
 
                                             String text = rated.hasData
-                                                ? '${(totalScore / rated.data!).toStringAsFixed(1)} (${rated.data} ratings)'
+                                                ? '${(totalScore / (rated.data == 0 ? 1 : rated.data!)).toStringAsFixed(1)} (${rated.data} ratings)'
                                                 : rated.error.toString();
                                             return Text(
                                               text,

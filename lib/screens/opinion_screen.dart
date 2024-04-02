@@ -228,8 +228,8 @@ class _OpinionScreenState extends State<OpinionScreen> {
                                             'image': placeData['image'],
                                             'latitude': placeData['latitude'],
                                             'located': placeData['located'],
-                                            'longtitude':
-                                                placeData['longtitude'],
+                                            'longitude':
+                                                placeData['longitude'],
                                             'name': placeData['name'],
                                             'score': newTotalScore,
                                           },
