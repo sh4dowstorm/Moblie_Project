@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:mobile_project/models/user.dart' as appUser;
+import 'package:mobile_project/screens/about_us_screen.dart';
 import 'package:mobile_project/screens/edit_account_screen.dart';
 import 'package:mobile_project/widgets/forward_button.dart';
 import 'package:mobile_project/widgets/setting_item.dart';
@@ -144,7 +145,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 icon: Ionicons.information_circle_sharp,
                 bgColor: Colors.green.shade100,
                 iconColor: Colors.green,
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AboutUsScreen(),)),
               ),
               const SizedBox(height: 20),
               SettingItem(
