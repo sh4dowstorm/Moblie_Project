@@ -59,7 +59,7 @@ class _AboutUsScreenState extends State<AboutUsScreen>
             _createLayout(
               imageLink:
                   'https://firebasestorage.googleapis.com/v0/b/mobile-project-trang.appspot.com/o/profile_moreINVegg.jpg?alt=media&token=f960ef52-b6ec-4d91-8ce4-c5e89fdf8fad',
-              name: 'นายไชยภัทร ศรีอำไพ',
+              name: 'นาย ไชยภัทร ศรีอำไพ',
               id: '6510450305',
               animationPath: 'assets/animations/shiba_inu.json',
               animationController: _shiba_inuController,
