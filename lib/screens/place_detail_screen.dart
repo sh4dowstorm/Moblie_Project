@@ -171,12 +171,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                   ),
 
                                   // name
-                                  Text(
-                                    place['name'],
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(fontWeight: FontWeight.w500),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    child: Text(
+                                      place['name'],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.w500),
+                                    ),
                                   ),
 
                                   // rated
