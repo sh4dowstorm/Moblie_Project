@@ -1,53 +1,72 @@
-import 'package:bcrypt/bcrypt.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class User {
-  String _username;
-  String _encryptedPassword;
-  String _email;
-  String _firstname;
-  String _surname;
-  String _userImagePath;
+  String uid;
+  String username;
+  String email;
+  String firstname;
+  String lastname;
+  String profilePictureUrl;
 
-  User(String username, String password, String email, String firstname, String surname, String userImagePath)
-      : _username = username,
-        _encryptedPassword = '',
-        _email = email,
-        _firstname = firstname,
-        _surname = surname,
-        _userImagePath = userImagePath {
-    _username = username;
-    _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-    _email = email;
-    _firstname = firstname;
-    _surname = surname;
-    _userImagePath = userImagePath;
+  User({
+    required this.uid,
+    required this.username,
+    required this.email,
+    required this.firstname,
+    required this.lastname,
+    required this.profilePictureUrl,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'email': email,
+      'firstname': firstname,
+      'lastname': lastname,
+      'profilePictureUrl': profilePictureUrl,
+    };
   }
 
-  String get username => _username;
-  String get encryptedPassword => _encryptedPassword;
-  String get email => _email;
-  String get firstname => _firstname;
-  String get surname => _surname;
-  String get userImagePath => _userImagePath;
-
-  void ChangeUsername(String username) {
-    _username = username;
+  factory User.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return User(
+      uid: doc.id,
+      username: data['username'],
+      email: data['email'],
+      firstname: data['firstname'],
+      lastname: data['lastname'],
+      profilePictureUrl: data['profilePictureUrl'],
+    );
   }
 
-  void ChangePassword(String password){
-    _encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+  void updateFrom(User user) {
+    username = user.username;
+    email = user.email;
+    firstname = user.firstname;
+    lastname = user.lastname;
+    profilePictureUrl = user.profilePictureUrl;
   }
 
-  bool validatePassword(String providedPassword) {
-    return BCrypt.checkpw(providedPassword, _encryptedPassword);
+  void updateProfilePicture(String url) {
+    profilePictureUrl = url;
+    _updateUserInFirestore();
   }
 
-  void ChangeEmail(String email) {
-    _email = email;
+  void updateUsername(String username) {
+    this.username = username;
+    _updateUserInFirestore();
   }
 
-  void ChangeProfilePicture(String userImagePath) {
-    _userImagePath = userImagePath;
+  Future<void> updateEmail(String newEmail) async {
+    final user = FirebaseAuth.instance.currentUser;
+    await user?.verifyBeforeUpdateEmail(newEmail);
   }
-  
+
+  Future<void> _updateUserInFirestore() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update(toMap());
+  }
 }
