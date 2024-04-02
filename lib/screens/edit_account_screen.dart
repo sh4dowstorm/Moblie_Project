@@ -119,7 +119,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     }
   }
 
-  void _updateUserAndSave() async {
+  Future<void> _updateUserAndSave() async {
     widget.user.username = _usernameController.text;
     widget.user.firstname = _firstNameController.text;
     widget.user.lastname = _lastNameController.text;
@@ -135,29 +135,75 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
       await widget.user.updateEmail(widget.user.email);
 
-      showDialog(
+      await showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 content: const Text(
                     'Please check your email inbox and verify the new email address.'),
                 actions: [
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('OK'))
+                    onPressed: () => Navigator.pop(context),
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context, widget.user),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceTint,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 30),
+                        ),
+                        child: const Text('OK'),
+                      ),
+                    ),
+                  ),
                 ],
               ));
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Profile updated")));
-      Navigator.pop(context, widget.user);
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: const Text('Profile updated successfully.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context, widget.user),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                  ),
+                  child: const Text('OK'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     } on FirebaseException catch (e) {
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           content: Text('Error updating profile: ${e.message}'),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('OK')),
+              onPressed: () => Navigator.pop(context),
+              child: Center(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.surfaceTint,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                  ),
+                  child: const Text('OK'),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -307,7 +353,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
-                    _updateUserAndSave();
+                    await _updateUserAndSave();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.surfaceTint,
