@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -17,13 +19,17 @@ class SearchPlace extends StatefulWidget {
 }
 
 class _SearchPlaceState extends State<SearchPlace> {
-  late List<Map<String, dynamic>> _matchPlaces;
+  Map<String, Map<String, dynamic>> allPlacesData = {};
+  late List<String> _matchPlaces;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _matchPlaces = _check(widget.places, '');
+    for (var i in widget.places) {
+      allPlacesData.putIfAbsent(i.id, () => i.data());
+    }
   }
 
   @override
@@ -65,23 +71,29 @@ class _SearchPlaceState extends State<SearchPlace> {
             ),
             Column(
               children: List.generate(
-                (_matchPlaces.length > 3) ? 3 : _matchPlaces.length,
-                (index) => ListTile(
+                  (_matchPlaces.length > 3) ? 3 : _matchPlaces.length, (index) {
+                return ListTile(
                   onTap: () {
-                    widget.addFunc(_matchPlaces[index], widget.places[index].id);
+                    late Map<String, dynamic> returnData;
+                    for (var i in widget.places) {
+                      if (_matchPlaces[index].compareTo(i.id) == 0) {
+                        returnData = i.data();
+                      }
+                    }
+                    widget.addFunc(returnData, _matchPlaces[index]);
                     Navigator.pop(context);
                   },
                   leading: const Icon(Ionicons.locate),
                   title: Text(
-                    _matchPlaces[index]['name'],
+                    allPlacesData[_matchPlaces[index]]!['name'],
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                   subtitle: Text(
-                    _matchPlaces[index]['located'],
+                    allPlacesData[_matchPlaces[index]]!['located'],
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
-                ),
-              ),
+                );
+              }),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -104,15 +116,15 @@ class _SearchPlaceState extends State<SearchPlace> {
     );
   }
 
-  List<Map<String, dynamic>> _check(
+  List<String> _check(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> places,
     String input,
   ) {
-    List<Map<String, dynamic>> temp = [];
+    List<String> temp = [];
     for (var i in places) {
       String placeName = i.data()['name'];
       if (placeName.contains(input)) {
-        temp.add(i.data());
+        temp.add(i.id);
       }
     }
 

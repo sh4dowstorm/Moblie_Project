@@ -247,7 +247,7 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                             placeData.putIfAbsent(i.id, () => i.data());
                           }
                           return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.4,
+                            height: MediaQuery.of(context).size.height * 0.6,
                             width: MediaQuery.of(context).size.width,
                             child: ReorderableListView.builder(
                               itemBuilder: (context, index) {

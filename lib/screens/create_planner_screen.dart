@@ -294,11 +294,23 @@ class _CreatePlannerState extends State<CreatePlanner> {
         return SearchPlace(
           places: places,
           addFunc: (Map<String, dynamic> addedPlace, String key) {
-            if (!_places.contains(addedPlace)) {
+            if (_places.isEmpty) {
               setState(() {
                 _places.add({key: addedPlace});
               });
+            } else {
+              List<String> allKeys = [];
+              for (int i = 0; i < _places.length; i++) {
+                log(_places[i].keys.toString());
+                allKeys.add(_places[i].keys.toList()[0]);
+              }
+              if (!allKeys.contains(key)) {
+                setState(() {
+                  _places.add({key: addedPlace});
+                });
+              }
             }
+            log('--------------------------');
           },
         );
       },
