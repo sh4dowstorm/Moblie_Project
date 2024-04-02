@@ -20,7 +20,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  bool isDarkMode = false;
 
   void _signOut() async {
   try {
@@ -108,36 +107,6 @@ class _SettingScreenState extends State<SettingScreen> {
               Text(
                 "Settings",
                 style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 20),
-              SettingItem(
-                title: "Language",
-                icon: Ionicons.earth,
-                bgColor: Colors.orange.shade100,
-                iconColor: Colors.orange,
-                value: "English",
-                onTap: () {},
-              ),
-              const SizedBox(height: 20),
-              SettingItem(
-                title: "Notifications",
-                icon: Ionicons.notifications,
-                bgColor: Colors.blue.shade100,
-                iconColor: Colors.blue,
-                onTap: () {},
-              ),
-              const SizedBox(height: 20),
-              SettingSwitch(
-                title: "Dark Mode",
-                icon: Ionicons.earth,
-                bgColor: Colors.purple.shade100,
-                iconColor: Colors.purple,
-                value: isDarkMode,
-                onTap: (value) {
-                  setState(() {
-                    isDarkMode = value;
-                  });
-                },
               ),
               const SizedBox(height: 20),
               SettingItem(
