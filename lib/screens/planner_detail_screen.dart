@@ -52,8 +52,8 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
         if (data != null) {
           setState(() {
             _plannerNameController.text = data['trip-name'];
-            _planName = data['trip-name'];
-            _planDate = data['trip-date'].toDate();
+            _planName = data['trip-name'] ?? '';
+            _planDate = data['trip-date'].toDate() ?? DateTime.now();
             _datePickerController.text =
                 formatDate(_planDate, [yyyy, '-', mm, '-', dd]);
             _places = List<String>.from(data['trip-list']);
@@ -75,11 +75,22 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
         return SearchPlace(
           places: places,
           addFunc: (Map<String, dynamic> addedPlace, String key) {
-            if (!_places.contains(addedPlace)) {
+            if (_places.isEmpty) {
               setState(() {
                 _places.add(key);
               });
+            } else {
+              List<String> allKeys = [];
+              for (int i = 0; i < _places.length; i++) {
+                allKeys.add(_places[i]);
+              }
+              if (!allKeys.contains(key)) {
+                setState(() {
+                  _places.add(key);
+                });
+              }
             }
+            log('--------------------------');
           },
         );
       },
@@ -246,19 +257,19 @@ class _PlannerDetailScreenState extends State<PlannerDetailScreen> {
                           for (var i in snapshot.data!.docs) {
                             placeData.putIfAbsent(i.id, () => i.data());
                           }
+
                           return SizedBox(
                             height: MediaQuery.of(context).size.height * 0.57,
                             width: MediaQuery.of(context).size.width,
                             child: ReorderableListView.builder(
                               itemBuilder: (context, index) {
                                 return ReorderableDragStartListener(
-                                  key: Key(_places[index]),
+                                  key: ValueKey(index),
                                   index: index,
                                   child: PlanPlace(
                                     image: placeData[_places[index]]!['image'],
                                     name: placeData[_places[index]]!['name'],
-                                    located:
-                                        placeData[_places[index]]!['located'],
+                                    located: placeData[_places[index]]!['located'],
                                     removeFunc: () {
                                       setState(() {
                                         _places.removeAt(index);
